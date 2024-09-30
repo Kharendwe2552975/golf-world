@@ -12,6 +12,7 @@
     "commitmsg": "commitlint -E HUSKY_GIT_PARAMS --no-install"
   },
   "dependencies": {
+    "@react-three/cannon": "^6.6.0",
     "@react-three/fiber": "^8.17.8",
     "@types/three": "^0.169.0",
     "react": "^18.3.1",
