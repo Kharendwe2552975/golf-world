@@ -2,15 +2,13 @@
   "files.exclude": {
     "**/.git**": true,
     "**/.husky": true,
-    "**/.vscode": true,
-    "**/node_modules": true,
-    "**/dist": true,
-    "**/eslint**": true,
+    "**/**.prettier**": true,
     "**/**config**": true,
     "**/**lock**": true,
     "**/**vite**": true,
-    //"**/**package**": true,
-    "**/**.prettier**": true
+    "**/dist": true,
+    "**/eslint**": true,
+    "**/node_modules": true
   },
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {

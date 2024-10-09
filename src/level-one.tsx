@@ -1,12 +1,15 @@
+//@ts-nocheck
+import { Physics, useBox, useSphere } from '@react-three/cannon';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { useRef } from 'react';
 import { Group, MathUtils } from 'three';
 
 function GrassBlock({ position, color }: { position: [number, number, number]; color: string }) {
   const randomHeight = MathUtils.randFloat(0.2, 0.5);
+  const [ref] = useBox(() => ({ args: [10, randomHeight, 10], position, type: 'Static' }));
 
   return (
-    <mesh position={position} receiveShadow castShadow>
+    <mesh ref={ref} position={position} receiveShadow castShadow>
       <boxGeometry args={[10, randomHeight, 10]} />
       <meshStandardMaterial color={color} />
     </mesh>
@@ -73,9 +76,11 @@ function SideRail({
   position: [number, number, number];
   rotation?: [number, number, number];
 }) {
+  const [ref] = useBox(() => ({ args: [10, 2, 200], position, rotation, type: 'Static' }));
+
   return (
     <>
-      <mesh position={position} rotation={rotation} receiveShadow>
+      <mesh ref={ref} position={position} rotation={rotation} receiveShadow>
         <boxGeometry args={[10, 2, 200]} />
         <meshStandardMaterial color={'#8B4513'} />
       </mesh>
@@ -88,14 +93,21 @@ function SideRail({
 }
 
 function FrontRail({ position }: { position: [number, number, number] }) {
+  const [ref] = useBox(() => ({
+    args: [10, 20, 110],
+    position,
+    rotation: [0, Math.PI / 2, 0],
+    type: 'Static',
+  }));
+
   return (
     <>
-      <mesh position={position} rotation={[0, Math.PI / 2, 0]} receiveShadow>
-        <boxGeometry args={[10, 2, 110]} />
+      <mesh ref={ref} position={position} rotation={[0, Math.PI / 2, 0]} receiveShadow>
+        <boxGeometry args={[10, 20, 110]} />
         <meshStandardMaterial color={'#8B4513'} />
       </mesh>
       <mesh position={[position[0], position[1] + 1, position[2]]} rotation={[0, Math.PI / 2, 0]}>
-        <boxGeometry args={[10, 0.1, 110]} />
+        <boxGeometry args={[10, 20, 110]} />
         <meshStandardMaterial color={'#5C3A1D'} />
       </mesh>
     </>
@@ -112,6 +124,25 @@ function FlagWithPole({ position }: { position: [number, number, number] }) {
   );
 }
 
+function Ball({ position }: { position: [number, number, number] }) {
+  const [ref, api] = useSphere(() => ({
+    mass: 1,
+    position,
+    velocity: [0, 0, -90], //Initial velocity
+    args: [2], // radius of the ball
+    onCollide: (e) => {
+      console.log('Ball collided with:', e.body);
+    },
+  }));
+
+  return (
+    <mesh ref={ref} castShadow>
+      <sphereGeometry args={[2, 32, 32]} />
+      <meshStandardMaterial color={'#ff0000'} />
+    </mesh>
+  );
+}
+
 const GolfGround = () => {
   const groupRef = useRef<Group>(null);
 
@@ -125,14 +156,17 @@ const GolfGround = () => {
       <spotLight position={[30, 60, 30]} angle={0.5} penumbra={0.5} intensity={1} castShadow />
       <pointLight position={[-20, 40, -20]} intensity={0.3} />
 
-      <group ref={groupRef}>
-        <GrassGround />
-        <FrontRail position={[0, 1, -100]} />
-        <SideRail position={[-50, 1, 0]} />
-        <SideRail position={[50, 1, 0]} />
-        <FrontRail position={[0, 1, 100]} />
-        <FlagWithPole position={[0, 0, -80]} />
-      </group>
+      <Physics gravity={[0, -9.81, 0]}>
+        <group ref={groupRef}>
+          <GrassGround />
+          <FrontRail position={[0, 0, -100]} />
+          <SideRail position={[-50, 1, 0]} />
+          <SideRail position={[50, 1, 0]} />
+          <FrontRail position={[0, 1, 100]} />
+          <FlagWithPole position={[0, 0, -80]} />
+          <Ball position={[0, 10, 0]} />
+        </group>
+      </Physics>
     </Canvas>
   );
 };
