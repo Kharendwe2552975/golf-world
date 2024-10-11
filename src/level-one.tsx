@@ -1,8 +1,10 @@
 //@ts-nocheck
 import { Physics, useBox, useSphere } from '@react-three/cannon';
+import { OrbitControls } from '@react-three/drei';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { useRef } from 'react';
 import { Group, MathUtils } from 'three';
+import Sky from './models/sky';
 
 function GrassBlock({ position, color }: { position: [number, number, number]; color: string }) {
   const randomHeight = MathUtils.randFloat(0.2, 0.5);
@@ -152,6 +154,8 @@ const GolfGround = () => {
       shadows
       style={{ height: '100vh', width: '100vw' }}
     >
+      <OrbitControls enablePan={true} enableZoom={true} enableRotate={true} />
+      <Sky />
       <ambientLight intensity={0.4} />
       <spotLight position={[30, 60, 30]} angle={0.5} penumbra={0.5} intensity={1} castShadow />
       <pointLight position={[-20, 40, -20]} intensity={0.3} />
