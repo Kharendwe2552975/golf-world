@@ -8,6 +8,7 @@ import { FrontRail, SideRail } from './rails';
 
 const LevelOne = () => {
   const groupRef = useRef<Group>(null);
+  const holePosition = [0, 0, -80];
 
   return (
     <group ref={groupRef}>
@@ -17,7 +18,7 @@ const LevelOne = () => {
       <SideRail position={[50, 1, 0]} />
       <FrontRail position={[0, 1, 100]} />
       <FlagWithPole position={[0, 0, -80]} />
-      <Ball position={[0, 10, 0]} />
+      <Ball position={[0, 10, 0]} holePosition={holePosition} />
     </group>
   );
 };
