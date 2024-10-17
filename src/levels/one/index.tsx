@@ -4,7 +4,7 @@ import FlagWithPole from '@/components/goal-point-flag';
 import { useRef } from 'react';
 import { Group } from 'three';
 import GrassGround from './grass';
-import { FrontRail, SideRail } from './rails';
+import { Rail } from './rails'; // Import the unified Rail component
 
 const LevelOne = () => {
   const groupRef = useRef<Group>(null);
@@ -12,10 +12,11 @@ const LevelOne = () => {
   return (
     <group ref={groupRef}>
       <GrassGround />
-      <FrontRail position={[0, 0, -100]} />
-      <SideRail position={[-50, 1, 0]} />
-      <SideRail position={[50, 1, 0]} />
-      <FrontRail position={[0, 1, 100]} />
+      {/* Use the Rail component with type prop */}
+      <Rail position={[0, 0, -100]} type="front" />
+      <Rail position={[-50, 1, 0]} type="side" />
+      <Rail position={[50, 1, 0]} type="side" />
+      <Rail position={[0, 1, 100]} type="front" />
       <FlagWithPole position={[0, 0, -80]} />
       <Ball position={[0, 10, 0]} />
     </group>

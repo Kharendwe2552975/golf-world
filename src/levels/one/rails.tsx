@@ -1,47 +1,69 @@
 //@ts-nocheck
 import { useBox } from '@react-three/cannon';
+import { shaderMaterial } from '@react-three/drei';
+import { extend } from '@react-three/fiber';
+import * as THREE from 'three';
+import { fragmentShader } from '../../components/shaders/fragmentShader';
+import { vertexShader } from '../../components/shaders/vertexShader';
+import { woodTexture } from '../../components/textures/woodTexture'; // Import the wood texture
 
-export function SideRail({
+// Define the custom shader material for wood
+const WoodMaterial = shaderMaterial(
+  {
+    uTexture: woodTexture, // Use the wood texture
+    uLightPosition: new THREE.Vector3(30, 50, 30),
+    uLightColor: new THREE.Color(1, 1, 1),
+    uAmbientLight: new THREE.Color(0.2, 0.2, 0.2),
+  },
+  vertexShader,
+  fragmentShader,
+);
+
+extend({ WoodMaterial });
+
+// Unified Rail component
+export function Rail({
   position,
   rotation = [0, 0, 0],
+  type = 'side', // Accept 'side' or 'front' to determine the rail type
 }: {
   position: [number, number, number];
   rotation?: [number, number, number];
+  type?: 'side' | 'front';
 }) {
-  const [ref] = useBox(() => ({ args: [10, 2, 200], position, rotation, type: 'Static' }));
+  const size = type === 'side' ? [10, 2, 200] : [10, 10, 110]; // Set the same height for both types
+  const isSide = type === 'side';
 
-  return (
-    <>
-      <mesh ref={ref} position={position} rotation={rotation} receiveShadow>
-        <boxGeometry args={[10, 2, 200]} />
-        <meshStandardMaterial color={'#8B4513'} />
-      </mesh>
-      <mesh position={[position[0], position[1] + 1, position[2]]}>
-        <boxGeometry args={[10, 0.1, 200]} />
-        <meshStandardMaterial color={'#5C3A1D'} />
-      </mesh>
-    </>
-  );
-}
-
-export function FrontRail({ position }: { position: [number, number, number] }) {
   const [ref] = useBox(() => ({
-    args: [10, 20, 110],
+    args: size,
     position,
-    rotation: [0, Math.PI / 2, 0],
+    rotation: isSide ? rotation : [0, Math.PI / 2, 0],
     type: 'Static',
   }));
 
   return (
     <>
-      <mesh ref={ref} position={position} rotation={[0, Math.PI / 2, 0]} receiveShadow>
-        <boxGeometry args={[10, 20, 110]} />
-        <meshStandardMaterial color={'#8B4513'} />
+      {/* Main rail mesh */}
+      <mesh
+        ref={ref}
+        position={position}
+        rotation={isSide ? rotation : [0, Math.PI / 2, 0]}
+        receiveShadow
+      >
+        <boxGeometry args={size} />
+        <woodMaterial attach="material" uTexture={woodTexture} /> {/* Use the wood texture */}
       </mesh>
-      <mesh position={[position[0], position[1] + 1, position[2]]} rotation={[0, Math.PI / 2, 0]}>
-        <boxGeometry args={[10, 20, 110]} />
-        <meshStandardMaterial color={'#5C3A1D'} />
-      </mesh>
+
+      {/* Render additional mesh only for side rails */}
+      {isSide && (
+        <mesh
+          position={[position[0], position[1] + 1, position[2]]} // Adjust this position as needed
+          rotation={rotation}
+        >
+          <boxGeometry args={size} />
+          <woodMaterial attach="material" uTexture={woodTexture} /> {/* Use the wood texture */}
+        </mesh>
+      )}
     </>
   );
 }
