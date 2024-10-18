@@ -104,10 +104,10 @@ const GolfGround = () => {
               fog: true,
             }}
           />
-          <Hill scaleFactor={2} />
-          <Forest density={3} />
+          {/* <Forest density={3} /> */}
         </group>
-        <Ball position={[0, 30, 0]} />
+        <Hill position={[0, 10, 0]} />
+        <Ball position={[0, 20, 0]} />
       </Physics>
     </Canvas>
   );
