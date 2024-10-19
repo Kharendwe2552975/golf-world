@@ -31,8 +31,8 @@ function Pole({ position }: { position: [number, number, number] }) {
 function Hole({ position }: { position: [number, number, number] }) {
   return (
     <mesh position={position} receiveShadow>
-      <cylinderGeometry args={[1.5, 1.5, 1, 32]} />
-      <meshStandardMaterial color={'#000000'} />
+      <cylinderGeometry args={[3.5, 1.5, 2, 32]} />
+      <meshStandardMaterial color={'#FFFFFF'} />
     </mesh>
   );
 }

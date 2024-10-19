@@ -29,6 +29,9 @@ importers:
       '@types/three':
         specifier: ^0.169.0
         version: 0.169.0
+      cannon-es:
+        specifier: ^0.20.0
+        version: 0.20.0
       react:
         specifier: ^18.3.1
         version: 18.3.1

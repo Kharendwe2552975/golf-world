@@ -1,9 +1,8 @@
 //@ts-nocheck
-import { useEffect, useState } from 'react';
-import { useFrame } from '@react-three/fiber';
 import { useSphere } from '@react-three/cannon';
+import { useFrame, useThree } from '@react-three/fiber';
+import { useEffect, useState } from 'react';
 import * as THREE from 'three';
-import { useThree } from '@react-three/fiber';
 
 export default function Ball({
   position,
@@ -22,20 +21,23 @@ export default function Ball({
     angularDamping: 0.5,
   }));
 
-  const { gl, scene } = useThree();
+  const { gl, scene, camera } = useThree();
   const [isDragging, setIsDragging] = useState(false);
   const [canDrag, setCanDrag] = useState(true);
   const [startMousePos, setStartMousePos] = useState<THREE.Vector2 | null>(null);
   const [endMousePos, setEndMousePos] = useState<THREE.Vector2 | null>(null);
+  const [ballPosition, setBallPosition] = useState<[number, number, number]>(position);
+  const [ballVelocity, setBallVelocity] = useState<[number, number, number]>([0, 0, 0]);
 
   const arrowRef = useState(() => new THREE.Mesh())[0];
+
   useEffect(() => {
     // Create the larger triangle geometry for the arrow
     const geometry = new THREE.BufferGeometry();
     const vertices = new Float32Array([
       0,
       1,
-      20,
+      20, // Arrow tip
       -1,
       -1,
       0, // Bottom left
@@ -54,34 +56,45 @@ export default function Ball({
       scene.remove(arrowRef);
     };
   }, [arrowRef, scene]);
-  // Check if ball is close enough to the hole
-  useFrame(() => {
-    const ballPosition = ref.current?.position;
-    const holeVector = new THREE.Vector3(...holePosition);
-
-    if (ballPosition) {
-      const distanceToHole = ballPosition.distanceTo(holeVector);
-
-      // If the ball is close enough to the hole, stop it and "enter" the hole
-      if (distanceToHole < 3) {
-        api.velocity.set(0, 0, 0); // Stop the ball
-        api.position.set(holePosition[0], holePosition[1], holePosition[2]); // Position ball in the hole
-      }
-    }
-  });
 
   useEffect(() => {
-    const unsubscribe = api.velocity.subscribe((velocity) => {
-      const speed = Math.sqrt(velocity[0] ** 2 + velocity[1] ** 2 + velocity[2] ** 2);
+    gl.domElement.addEventListener('mousedown', handleMouseDown);
+    gl.domElement.addEventListener('mousemove', handleMouseMove);
+    gl.domElement.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      gl.domElement.removeEventListener('mousedown', handleMouseDown);
+      gl.domElement.removeEventListener('mousemove', handleMouseMove);
+      gl.domElement.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging, startMousePos, endMousePos, canDrag]);
+
+  useEffect(() => {
+    // Subscribe to ball position updates
+    const unsubscribePosition = api.position.subscribe((p) => {
+      setBallPosition([p[0], p[1], p[2]]);
+    });
+
+    // Subscribe to ball velocity updates
+    const unsubscribeVelocity = api.velocity.subscribe((v) => {
+      setBallVelocity([v[0], v[1], v[2]]);
+
+      const speed = Math.sqrt(v[0] ** 2 + v[2] ** 2);
       if (speed < 0.1) {
         setCanDrag(true);
+        arrowPosition();
+        arrowRef.visible = true;
       } else {
         setCanDrag(false);
+        arrowRef.visible = false;
       }
     });
 
-    return () => unsubscribe();
-  }, [api.velocity]);
+    return () => {
+      unsubscribePosition();
+      unsubscribeVelocity();
+    };
+  }, [api.position, api.velocity]);
 
   const handleMouseUp = () => {
     if (isDragging && startMousePos && endMousePos && canDrag) {
@@ -91,9 +104,13 @@ export default function Ball({
       );
 
       const dragLength = dragVector.length();
-      const impulseDirection = dragVector.normalize().multiplyScalar(-dragLength * 10);
+      const impulseDirection = dragVector.normalize().multiplyScalar(-dragLength * 5);
 
-      api.applyImpulse([impulseDirection.x, 0, impulseDirection.y], [0, 0, 0]);
+      // Apply impulse in the direction relative to the scene's rotation
+      const sceneRotationY = scene.rotation.y; // Get the scene's Y-axis rotation
+      const rotatedImpulse = rotateVector2(impulseDirection, -sceneRotationY); // Rotate the direction by the scene's rotation
+
+      api.applyImpulse([rotatedImpulse.x, 0, rotatedImpulse.y], [0, 0, 0]);
 
       arrowRef.visible = false;
     }
@@ -112,14 +129,13 @@ export default function Ball({
         const dragVector = new THREE.Vector2(clientX - startMousePos.x, clientY - startMousePos.y);
         const direction = dragVector.normalize().multiplyScalar(-1); // Reverse direction for arrow
 
-        // Position and rotate the arrow based on the reversed drag direction
+        // Show the arrow during dragging
         arrowRef.visible = true;
-        arrowRef.position.set(
-          ref.current.position.x,
-          ref.current.position.y + 3,
-          ref.current.position.z,
-        );
         arrowRef.rotation.set(0, Math.atan2(direction.x, direction.y), 0);
+
+        // Adjust arrow rotation based on scene's Y rotation
+        const sceneRotationY = scene.rotation.y;
+        arrowRef.rotation.y += sceneRotationY;
       }
     }
   };
@@ -132,17 +148,27 @@ export default function Ball({
     }
   };
 
-  useEffect(() => {
-    gl.domElement.addEventListener('mousedown', handleMouseDown);
-    gl.domElement.addEventListener('mousemove', handleMouseMove);
-    gl.domElement.addEventListener('mouseup', handleMouseUp);
+  const arrowPosition = () => {
+    arrowRef.position.set(
+      ballPosition[0],
+      ballPosition[1] + 5, // Slightly above the ball
+      ballPosition[2],
+    );
+  };
 
-    return () => {
-      gl.domElement.removeEventListener('mousedown', handleMouseDown);
-      gl.domElement.removeEventListener('mousemove', handleMouseMove);
-      gl.domElement.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [isDragging, startMousePos, endMousePos, canDrag]);
+  // Sync the arrow position with the ball in real time
+  useFrame(() => {
+    if (isDragging) {
+      arrowPosition();
+    }
+  });
+
+  // Helper function to rotate a 2D vector (for applying scene rotation)
+  const rotateVector2 = (vector: THREE.Vector2, angle: number) => {
+    const cos = Math.cos(angle);
+    const sin = Math.sin(angle);
+    return new THREE.Vector2(vector.x * cos - vector.y * sin, vector.x * sin + vector.y * cos);
+  };
 
   return (
     <mesh ref={ref} castShadow>
