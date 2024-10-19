@@ -2,13 +2,13 @@
 import { Physics, usePlane } from '@react-three/cannon';
 import { OrbitControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
-import { useMemo, useRef } from 'react';
+import { useRef } from 'react';
 import { FrontSide, Group, Vector3 } from 'three';
 import Ball from './components/ball';
-import Hill from './components/hill';
+import FlagWithPole from './components/goal-point-flag';
 import { Ocean } from './components/ocean';
+import Hill from './levels/three/hill';
 import Sky from './models/sky';
-import Model from './utils/import-model';
 
 function BoundaryPlane({ position, rotation }) {
   const [ref] = usePlane(() => ({
@@ -28,29 +28,6 @@ function getRandomPositionWithinHill(hillWidth: number, hillHeight: number) {
   return [x, y, z];
 }
 
-function Forest({ density }: { density: number }) {
-  const hillWidth = 20; // Width of the hill
-  const hillHeight = 20; // Height of the hill
-
-  // Generate random tree positions using useMemo for optimization
-  const treePositions = useMemo(() => {
-    const positions: [number, number, number][] = [];
-    for (let i = 0; i < density; i++) {
-      positions.push(getRandomPositionWithinHill(hillWidth, hillHeight));
-    }
-    return positions;
-  }, [density]);
-  console.log(treePositions);
-
-  return (
-    <>
-      {treePositions.map((position, index) => (
-        <Model key={index} url={'./tree-tall.glb'} scale={10} position={position} />
-      ))}
-    </>
-  );
-}
-
 const GolfGround = () => {
   const groupRef = useRef<Group>(null);
   const ocean = useRef();
@@ -65,7 +42,7 @@ const GolfGround = () => {
         enableZoom={true}
         enableRotate={true}
         minDistance={5}
-        maxDistance={200}
+        maxDistance={300}
         minPolarAngle={0} // Prevent the camera from rotating below the horizon
         maxPolarAngle={(Math.PI - 0.2) / 2}
       />
@@ -86,7 +63,7 @@ const GolfGround = () => {
           {/* Ocean Surface */}
           <Ocean
             ref={ocean}
-            dimensions={[500, 500]}
+            dimensions={[800, 800]}
             normals="./Normals/waternormals.jpg"
             distortionScale={20}
             size={10}
@@ -104,10 +81,11 @@ const GolfGround = () => {
               fog: true,
             }}
           />
+          <Hill position={[0, 10, 0]} />
+          <FlagWithPole position={[20, 20, 125]} />
           {/* <Forest density={3} /> */}
         </group>
-        <Hill position={[0, 10, 0]} />
-        <Ball position={[0, 20, 0]} />
+        <Ball position={[0, 40, 0]} />
       </Physics>
     </Canvas>
   );

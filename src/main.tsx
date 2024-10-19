@@ -1,9 +1,9 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import LevelOne from './experiment';
 import GameStage from './game-stage';
 import GameMenu from './home-menu';
-import LevelOne from './level-one';
 import TestScene from './testWorld';
 
 createRoot(document.getElementById('root')!).render(

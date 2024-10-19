@@ -1,7 +1,7 @@
 // Test.tsx
 import { OrbitControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
-import Hill from './components/hill';
+import Hill from './levels/three/hill';
 
 export default function TestScene() {
   return (

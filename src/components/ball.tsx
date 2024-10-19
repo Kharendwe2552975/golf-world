@@ -6,8 +6,9 @@ export default function Ball({ position }: { position: [number, number, number] 
   const [ref, api] = useSphere(() => ({
     mass: 1,
     position,
-    velocity: [0, 0, 500], //Initial velocity
-    args: [2], // radius of the ball
+    velocity: [0, 0, 500],
+    args: [2],
+    restitution: 0.8, // Higher values make the ball more bouncy
     onCollide: (e) => {
       console.log('Ball collided with:', e.body);
     },
