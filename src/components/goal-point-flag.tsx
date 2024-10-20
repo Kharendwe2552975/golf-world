@@ -33,17 +33,8 @@ function Flag({ position }: { position: [number, number, number] }) {
 function Pole({ position }: { position: [number, number, number] }) {
   return (
     <mesh position={position} receiveShadow>
-      <cylinderGeometry args={[0.5, 0.5, 72, 32]} />
+      <cylinderGeometry args={[0.5, 0.5, 45, 32]} />
       <meshStandardMaterial color={'#ffffff'} />
-    </mesh>
-  );
-}
-
-function Hole({ position }: { position: [number, number, number] }) {
-  return (
-    <mesh position={position} receiveShadow>
-      <cylinderGeometry args={[1.5, 1.5, 1, 32]} />
-      <meshStandardMaterial color={'#000000'} />
     </mesh>
   );
 }
@@ -51,9 +42,8 @@ function Hole({ position }: { position: [number, number, number] }) {
 export default function FlagWithPole({ position }: { position: [number, number, number] }) {
   return (
     <group position={position}>
-      <Pole position={[0, 5, 0]} />
-      <Flag position={[0, 35, 0]} />
-      <Hole position={[0, 0, 0]} />
+      <Pole position={[0, 22, -3.5]} />
+      <Flag position={[0, 38, -3.5]} />
     </group>
   );
 }
