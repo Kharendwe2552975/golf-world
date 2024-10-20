@@ -4,7 +4,12 @@ import { MathUtils } from 'three';
 
 function GrassBlock({ position, color }: { position: [number, number, number]; color: string }) {
   const randomHeight = MathUtils.randFloat(0.2, 0.5);
-  const [ref] = useBox(() => ({ args: [10, randomHeight, 10], position, type: 'Static' }));
+  const [ref] = useBox(() => ({
+    args: [10, randomHeight, 10],
+    position,
+    type: 'Static',
+    material: { friction: 1.0 },
+  }));
 
   return (
     <mesh ref={ref} position={position} receiveShadow castShadow>
