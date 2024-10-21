@@ -3,12 +3,12 @@ import { useBox } from '@react-three/cannon';
 import { MathUtils } from 'three';
 
 function GrassBlock({ position, color }: { position: [number, number, number]; color: string }) {
-  const randomHeight = MathUtils.randFloat(0.2, 0.5);
+  const randomHeight = MathUtils.randFloat(0.2, 0.4);
   const [ref] = useBox(() => ({
     args: [10, randomHeight, 10],
     position,
     type: 'Static',
-    material: { friction: 1.0 },
+    contactHardness: 0.5,
   }));
 
   return (

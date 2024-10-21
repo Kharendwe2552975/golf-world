@@ -1,22 +1,30 @@
 import { useSphere } from '@react-three/cannon';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import AimingArrow from './aiming-arrow';
 import { useBall } from './ball-provider';
 import CameraController from './camera-controller';
 
 const Ball = () => {
   const [ref, api] = useSphere(() => ({
-    mass: 1,
-    position: [0, 10, 0],
-    velocity: [0, 0, 0],
+    mass: 0.045,
+    position: [0, 10, 80],
     args: [2],
-    material: { friction: 1.0 },
+    material: {
+      friction: 0.1,
+      restitution: 0.1, // Bounciness
+      rollingFriction: 0.05,
+    },
+    linearDamping: 0.3, // To slow down rolling
+    angularDamping: 0.4, // To slow down rolling
+    airResistance: 0.01,
   }));
 
-  const { position, setPosition, applyApi } = useBall();
-  const [showAimingArrow, setShowAimingArrow] = useState(false);
+  const { state, setState, position, setPosition, applyApi } = useBall();
+  // Use useCallback to ensure applyApi is not re-created on every render
+  const stableApplyApi = useCallback(() => applyApi(api), [api, applyApi]);
+
   useEffect(() => {
-    applyApi(api);
+    stableApplyApi();
 
     const unsubscribePosition = api.position.subscribe((pos) => {
       setPosition([pos[0], pos[1], pos[2]]);
@@ -24,14 +32,16 @@ const Ball = () => {
 
     const unsubscribeVelocity = api.velocity.subscribe((velocity) => {
       const isStationary = velocity.every((v) => Math.abs(v) < 0.5);
-      setShowAimingArrow(isStationary);
+      if (state === 'rolling' && isStationary) {
+        setState('aiming');
+      }
     });
 
     return () => {
       unsubscribePosition(); // Clean up subscription
       unsubscribeVelocity(); // Clean up subscription
     };
-  }, [api, setPosition, applyApi]);
+  }, [state, setPosition, stableApplyApi]);
 
   return (
     <>
@@ -41,7 +51,7 @@ const Ball = () => {
         <meshStandardMaterial color="white" />
       </mesh>
 
-      {showAimingArrow && <AimingArrow position={position} />}
+      {state !== 'rolling' && <AimingArrow position={position} />}
       <CameraController />
     </>
   );

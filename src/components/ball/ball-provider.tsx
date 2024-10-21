@@ -1,9 +1,10 @@
-import React, { createContext, useContext, useRef, useState } from 'react';
+import React, { createContext, useCallback, useContext, useRef, useState } from 'react';
 
 // Define the context type, including position, applyForce, and setShootingAngle
 type BallContextType = {
   position: [number, number, number];
-  isAiming: boolean;
+  state: 'aiming' | 'shooting' | 'rolling';
+  setState: (state: 'aiming' | 'shooting' | 'rolling') => void;
   setPosition: (pos: [number, number, number]) => void;
   applyForce: (strength: number) => void;
   setShootingAngle: (angle: number) => void;
@@ -12,35 +13,43 @@ type BallContextType = {
 
 // Create the context
 const BallContext = createContext<BallContextType | undefined>(undefined);
-
 export const BallProvider = ({ children }: { children: React.ReactNode }) => {
   const [position, setPosition] = useState<[number, number, number]>([0, 0, 0]);
   const [shootingAngle, setShootingAngleState] = useState(0);
-  const [isAiming, setIsAiming] = useState(true);
-  const apiRef = useRef<any>(null); // To store the physics API
+  const [state, setState] = useState<'aiming' | 'shooting' | 'rolling'>('aiming');
+  const apiRef = useRef<any>(null);
 
-  const setShootingAngle = (angle: number) => {
-    setShootingAngleState(angle);
-    setIsAiming(false);
-  };
+  const setShootingAngle = useCallback(
+    (angle: number) => {
+      if (state !== 'aiming') return;
+      setShootingAngleState(angle);
+      setState('shooting'); // Transition to shooting state
+    },
+    [state],
+  );
 
-  const applyForce = (strength: number) => {
-    if (apiRef.current) {
-      const force = Math.min(Math.max(strength, 0), 100); // Clamp force between 0 and 100
-      const forceX = Math.cos(shootingAngle) * force * 20;
-      const forceZ = Math.sin(shootingAngle) * force * 20;
-      apiRef.current.applyForce([forceX, 0, forceZ], [0, 0, 0]); // Apply force based on angle
-    }
-    setIsAiming(true);
-  };
+  const applyForce = useCallback(
+    (strength: number) => {
+      if (state !== 'shooting') return;
+      if (apiRef.current) {
+        const force = Math.min(Math.max(strength, 0), 100); // Clamp force between 0-100
+        const forceX = Math.cos(-shootingAngle) * force * 4;
+        const forceZ = Math.sin(-shootingAngle) * force * 4;
 
-  const applyApi = (api: any) => {
-    apiRef.current = api; // Store the physics API for later use
-  };
+        apiRef.current.applyForce([-forceX, 0, -forceZ], [0, 0, 0]); // Apply force
+      }
+      setState('rolling'); // Transition to rolling state
+    },
+    [state, shootingAngle],
+  );
+
+  const applyApi = useCallback((api: any) => {
+    apiRef.current = api;
+  }, []);
 
   return (
     <BallContext.Provider
-      value={{ position, isAiming, setPosition, applyForce, setShootingAngle, applyApi }}
+      value={{ position, state, setState, setPosition, applyForce, setShootingAngle, applyApi }}
     >
       {children}
     </BallContext.Provider>

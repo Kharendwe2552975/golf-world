@@ -5,8 +5,7 @@ import { useBall } from './ball-provider';
 
 const AimingArrow = ({ position }: { position: [number, number, number] }) => {
   const [rotationAngle, setRotationAngle] = useState(0);
-  const { isAiming, setShootingAngle } = useBall();
-
+  const { state, setShootingAngle } = useBall();
   const { camera } = useThree();
 
   useEffect(() => {
@@ -14,29 +13,26 @@ const AimingArrow = ({ position }: { position: [number, number, number] }) => {
     const mouse = new THREE.Vector2();
 
     const handleMouseMove = (event: MouseEvent) => {
-      if (!isAiming) return;
-      // Convert mouse screen coordinates to normalized device coordinates (-1 to +1)
-      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-      mouse.y = 1; //-(event.clientY / window.innerHeight) * 2 + 1;
+      if (state !== 'aiming') return;
 
-      // Set the raycaster to cast from the camera into the scene based on mouse coordinates
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = 1; //- (event.clientY / window.innerHeight) * 2 + 1;
+
       raycaster.setFromCamera(mouse, camera);
 
-      // Intersect the ray with a plane (XZ plane in this case)
-      const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0); // Y-up plane (XZ plane)
+      const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0); // XZ plane
       const intersectPoint = new THREE.Vector3();
       raycaster.ray.intersectPlane(plane, intersectPoint);
 
-      // Calculate the angle between the arrow base (position) and the intersection point
       const deltaX = intersectPoint.x - position[0];
-      const deltaZ = intersectPoint.z - position[2]; // XZ plane, so use z
-      const angle = Math.atan2(deltaZ, deltaX); // Calculate the angle in radians
+      const deltaZ = intersectPoint.z - position[2];
+      const angle = Math.atan2(deltaZ, deltaX);
 
-      setRotationAngle(angle); // Update the angle state
+      setRotationAngle(angle);
     };
 
     const handleMouseClick = () => {
-      if (!isAiming) return;
+      if (state !== 'aiming') return;
       setShootingAngle(rotationAngle);
     };
 
@@ -45,16 +41,15 @@ const AimingArrow = ({ position }: { position: [number, number, number] }) => {
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('click', handleMouseClick);
     };
-  }, [camera, position]);
+  }, [state, camera, position, rotationAngle]);
 
   return (
     <mesh position={position} rotation={[0, rotationAngle, Math.PI / 2]}>
-      {/* Offset the cone geometry so its base is at the origin */}
       <coneGeometry args={[1, 20, 32]} />
       <meshBasicMaterial color={0x00ff00} transparent opacity={0.2} />
       <mesh position={[0, 10, 0]}>
-        {/* Translate the cone up by half its height */}
         <coneGeometry args={[1, 20, 32]} />
         <meshBasicMaterial color={0x00ff00} transparent opacity={0.6} />
       </mesh>

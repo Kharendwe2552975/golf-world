@@ -4,10 +4,10 @@ import './energy-selector.css';
 
 const EnergySelector = () => {
   const [value, setValue] = useState(0);
-  const { isAiming, applyForce } = useBall();
+  const { state, applyForce } = useBall();
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (isAiming) return;
+    if (state !== 'shooting') return;
     const slider = e.currentTarget;
     const rect = slider.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
@@ -18,11 +18,11 @@ const EnergySelector = () => {
   };
 
   const handleMouseUp = () => {
-    if (isAiming) return;
+    if (state !== 'shooting') return;
     applyForce(value);
   };
 
-  if (isAiming) {
+  if (state !== 'shooting') {
     return null;
   }
 
