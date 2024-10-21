@@ -1,11 +1,14 @@
-//@ts-nocheck
+import { Box, Typography } from '@mui/material'; // Import MUI components
 import { useSphere } from '@react-three/cannon';
-import { shaderMaterial } from '@react-three/drei';
+import { Html, shaderMaterial } from '@react-three/drei'; // Import Html from drei
 import { extend } from '@react-three/fiber';
+import { useEffect, useState } from 'react';
 import * as THREE from 'three';
 import { fragmentShader } from '../components/shaders/fragmentShader';
 import { vertexShader } from '../components/shaders/vertexShader';
 import { ballTexture } from '../components/textures/ballTexture';
+
+// The rest of your component code remains the same.
 
 // Define the custom shader material
 const CustomMaterial = shaderMaterial(
@@ -22,6 +25,12 @@ const CustomMaterial = shaderMaterial(
 extend({ CustomMaterial });
 
 export default function Ball({ position }: { position: [number, number, number] }) {
+  const [ballPosition, setBallPosition] = useState<[number, number, number]>(position);
+  const [showWinPopup, setShowWinPopup] = useState(false); // State to control popup visibility
+
+  const holePosition = { x: 5 * 10 - 50, z: 2 * 10 - 100 }; // Calculate the hole's world position
+  const holeRadius = 3; // Same as in your tile with hole
+
   const [ref, api] = useSphere(() => ({
     mass: 1,
     position,
@@ -32,10 +41,50 @@ export default function Ball({ position }: { position: [number, number, number] 
     },
   }));
 
+  useEffect(() => {
+    // Subscribe to ball position updates
+    api.position.subscribe((p) => {
+      setBallPosition([p[0], p[1], p[2]]);
+
+      // Check if the ball is falling (y position is negative)
+      if (p[1] < 0 && !showWinPopup) {
+        // Ensure popup shows only once
+        const distanceToHole = Math.sqrt(
+          (p[0] - holePosition.x) ** 2 + (p[2] - holePosition.z) ** 2,
+        );
+
+        // Check if the ball is within the hole's radius
+        if (distanceToHole < holeRadius) {
+          setShowWinPopup(true); // Trigger popup
+        }
+      }
+    });
+  }, [api.position, holePosition, showWinPopup]);
+
   return (
-    <mesh ref={ref} castShadow receiveShadow>
-      <sphereGeometry args={[2, 32, 32]} />
-      <customMaterial attach="material" uTexture={ballTexture} />
-    </mesh>
+    <>
+      <mesh ref={ref} castShadow receiveShadow>
+        <sphereGeometry args={[2, 32, 32]} />
+        <customMaterial attach="material" uTexture={ballTexture} />
+      </mesh>
+      {showWinPopup && (
+        <Html position={[0, 10, 0]} zIndexRange={[100, 0]}>
+          <Box
+            sx={{
+              padding: '20px',
+              backgroundColor: 'rgba(0, 255, 0, 0.8)',
+              color: 'white',
+              borderRadius: '10px',
+              textAlign: 'center',
+              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
+              width: '200px', // Set width for a rectangular shape
+            }}
+          >
+            <Typography variant="h5">You Won!</Typography>
+          </Box>
+        </Html>
+      )}{' '}
+      {/* Render the popup if won */}
+    </>
   );
 }
