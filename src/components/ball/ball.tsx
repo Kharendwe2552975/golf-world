@@ -19,7 +19,16 @@ const Ball = () => {
     airResistance: 0.01,
   }));
 
-  const { state, setState, position, setPosition, applyApi } = useBall();
+  const {
+    state,
+    setState,
+    position,
+    setPosition,
+    lastStationaryPosition,
+    setLastStationaryPosition,
+    applyApi,
+  } = useBall();
+
   // Use useCallback to ensure applyApi is not re-created on every render
   const stableApplyApi = useCallback(() => applyApi(api), [api, applyApi]);
 
@@ -28,12 +37,21 @@ const Ball = () => {
 
     const unsubscribePosition = api.position.subscribe((pos) => {
       setPosition([pos[0], pos[1], pos[2]]);
+
+      // Check if the ball is out of bounds
+      if (pos[1] < 0) {
+        // Reset the ball to the last stationary position
+        api.position.set(...lastStationaryPosition);
+        api.velocity.set(0, 0, 0); // Stop any movement
+        setState('aiming');
+      }
     });
 
     const unsubscribeVelocity = api.velocity.subscribe((velocity) => {
       const isStationary = velocity.every((v) => Math.abs(v) < 0.5);
       if (state === 'rolling' && isStationary) {
         setState('aiming');
+        setLastStationaryPosition(position); // Set last stationary position
       }
     });
 
@@ -41,7 +59,14 @@ const Ball = () => {
       unsubscribePosition(); // Clean up subscription
       unsubscribeVelocity(); // Clean up subscription
     };
-  }, [state, setPosition, stableApplyApi]);
+  }, [
+    state,
+    setPosition,
+    stableApplyApi,
+    position,
+    lastStationaryPosition,
+    setLastStationaryPosition,
+  ]);
 
   return (
     <>
