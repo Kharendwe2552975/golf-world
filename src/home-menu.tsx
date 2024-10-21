@@ -3,11 +3,22 @@ import '@/styles.css';
 import { Box, Button, Typography } from '@mui/material';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import startSound from '../src/assets/start.mp3';
 
 const GameMenu: React.FC = () => {
   const navigate = useNavigate();
+  const startAudio = new Audio(startSound);
+
   const handleStartGame = () => {
-    navigate('/play');
+    startAudio
+      .play()
+      .then(() => {
+        navigate('/play');
+      })
+      .catch((error) => {
+        console.error('Failed to play start sound:', error);
+        navigate('/play');
+      });
   };
 
   const handleSettings = () => {
