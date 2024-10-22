@@ -19,12 +19,12 @@ const GetLevel = ({ level, increaseScore }: { level: number; increaseScore: () =
 
 const Game = () => {
   const [level, setLevel] = useState(1);
-  const [score, setScore] = useState(0);
+  const [score, setScore] = useState(10);
   const [isLevelComplete, setIsLevelComplete] = useState(false);
   const navigate = useNavigate();
 
   const handleQuitGame = () => {
-    setScore(0);
+    setScore(10);
     setLevel(1);
     navigate('/');
   };
@@ -33,7 +33,7 @@ const Game = () => {
   const completeLevel = () => {
     setIsLevelComplete(true);
     setScore(0);
-    setLevel(2);
+    setLevel(level + 1);
   };
 
   // Function to hide the popup and move to the next level (or reset)
@@ -44,8 +44,8 @@ const Game = () => {
   };
   // Function to update score (this would be based on your game logic)
   const increaseScore = () => {
-    setScore(score + 1);
-    if (score == 10) {
+    setScore(score - 1);
+    if (score == 0) {
       completeLevel();
     }
   };
@@ -102,6 +102,10 @@ const Game = () => {
           left: 20,
           padding: '10px 20px',
           fontSize: '16px',
+          borderRadius: '20px',
+          border: '2px solid #ffffff94',
+          background: 'linear-gradient(45deg, #f2f2f2ba, transparent)',
+          backdropFilter: 'blur(6px)',
         }}
       >
         Quit

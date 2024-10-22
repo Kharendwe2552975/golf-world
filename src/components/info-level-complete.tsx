@@ -1,3 +1,4 @@
+import { Button, Typography } from '@mui/material';
 import React from 'react';
 
 function LevelCompletePopup({ isVisible, onClose }: { isVisible: boolean; onClose: () => void }) {
@@ -6,10 +7,12 @@ function LevelCompletePopup({ isVisible, onClose }: { isVisible: boolean; onClos
   return (
     <div style={styles.overlay}>
       <div style={styles.popup}>
-        <h1>Level Complete!</h1>
-        <button onClick={onClose} style={styles.button}>
+        <Typography p={8} color="white" variant="h2">
+          Level Complete!
+        </Typography>
+        <Button color="secondary" variant={'contained'} onClick={onClose}>
           Next Level
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -29,9 +32,11 @@ const styles: { [key: string]: React.CSSProperties } = {
     zIndex: 1000,
   },
   popup: {
-    backgroundColor: 'white',
     padding: '20px',
-    borderRadius: '10px',
+    borderRadius: '20px',
+    border: '2px solid #ffffff94',
+    background: 'linear-gradient(45deg, #f2f2f2ba, transparent)',
+    backdropFilter: 'blur(6px)',
     textAlign: 'center',
   },
   button: {

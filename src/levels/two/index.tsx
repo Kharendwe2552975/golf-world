@@ -128,7 +128,7 @@ const Level2 = ({ increaseScore }: { increaseScore: () => void }) => {
       <group rotation={[0, 0, 0]}>
         <InclinedPlane position={[0, 20, 0]} angle={Math.PI / 3} />
       </group>
-      {/* <Ball init_position={[0, 10, 380]} increaseScore={increaseScore} /> */}
+      {/* <Ball init_position={[0, 20, 300]} increaseScore={increaseScore} /> */}
     </group>
   );
 };
