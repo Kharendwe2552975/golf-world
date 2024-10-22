@@ -1,20 +1,22 @@
-//@ts-nocheck
 import { Physics } from '@react-three/cannon';
 import { OrbitControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
-import { useRef, useState } from 'react';
-import { FrontSide, Vector3 } from 'three';
+import { useState } from 'react';
+import EnergySelector from './components/ball/energy-selector';
 import LevelCompletePopup from './components/info-level-complete';
-import { Ocean } from './components/ocean';
 import LevelOne from './levels/one';
-import Level3 from './levels/three';
+import Level2 from './levels/two';
 import Sky from './models/sky';
 
-const GetLevel = ({ level }: { level: number }) => {
-  return level == 1 ? <LevelOne /> : <Level3 />;
+const GetLevel = ({ level, increaseScore }: { level: number; increaseScore: () => void }) => {
+  return level == 1 ? (
+    <LevelOne increaseScore={increaseScore} />
+  ) : (
+    <Level2 increaseScore={increaseScore} />
+  );
 };
 
-const GameStage = () => {
+const Game = () => {
   const [level, setLevel] = useState(1);
   const [score, setScore] = useState(0);
   const [isLevelComplete, setIsLevelComplete] = useState(false);
@@ -39,12 +41,10 @@ const GameStage = () => {
       completeLevel();
     }
   };
-  const ocean = useRef();
-
   return (
     <>
       <Canvas
-        camera={{ position: [0, 80, 150], fov: 60 }}
+        camera={{ position: [0, 80, 80], fov: 60 }}
         shadows
         style={{ height: '100vh', width: '100vw' }}
       >
@@ -53,7 +53,7 @@ const GameStage = () => {
           enableZoom={true}
           enableRotate={true}
           minDistance={5}
-          maxDistance={300}
+          maxDistance={500}
           minPolarAngle={0} // Prevent the camera from rotating below the horizon
           maxPolarAngle={(Math.PI - 0.2) / 2}
         />
@@ -68,31 +68,11 @@ const GameStage = () => {
           shadow-mapSize-width={1024}
           shadow-mapSize-height={1024}
         />
-
         <Physics gravity={[0, -9.81, 0]}>
-          <Ocean
-            ref={ocean}
-            dimensions={[800, 800]}
-            normals="./Normals/waternormals.jpg"
-            distortionScale={20}
-            size={10}
-            options={{
-              // defaults
-              clipBias: 0,
-              alpha: 0.8,
-              waterNormals: null, // automatically set to provided texture from "normals" prop
-              sunDirection: new Vector3(0.70707, 0.70707, 0),
-              sunColor: 0xffffff,
-              waterColor: 0x001e0f,
-              eye: new Vector3(0, 0, 0),
-              distortionScale: 3.7, // automatically set from "distortionScale" prop
-              side: FrontSide,
-              fog: true,
-            }}
-          />
-          <GetLevel level={level} />
+          <GetLevel level={level} increaseScore={increaseScore} />
         </Physics>
       </Canvas>
+      <EnergySelector />
       <div
         style={{
           fontFamily: 'Roboto, sans-serif',
@@ -123,4 +103,4 @@ const GameStage = () => {
   );
 };
 
-export default GameStage;
+export default Game;
