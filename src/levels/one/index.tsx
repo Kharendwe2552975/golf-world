@@ -1,5 +1,5 @@
-//@ts-nocheck
 import Ball from '@/components/ball/ball';
+import MultiplayerBalls from '@/components/multiplayer/multiplayer-ball';
 import { useRef } from 'react';
 import { Group } from 'three';
 import GrassGround from '../../components/grass';
@@ -17,6 +17,7 @@ const LevelOne = () => {
       <Rail position={[50, 1, 0]} />
       <Rail position={[0, 1, 100]} rotation={[0, Math.PI / 2, 0]} size={[10, 5, 110]} />
       <Ball />
+      <MultiplayerBalls />
     </group>
   );
 };

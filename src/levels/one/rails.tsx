@@ -8,7 +8,7 @@ export default function Rail({
 }: {
   position: [number, number, number];
   rotation?: [number, number, number];
-  size: [number, number, number];
+  size?: [number, number, number];
 }) {
   const [ref] = useBox(() => ({ args: size, position: position, rotation: rotation }));
 

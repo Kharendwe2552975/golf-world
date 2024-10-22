@@ -4,7 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev-client": "vite",
+    "dev-server": "cd server && php -S localhost:8000",
     "build": "vite build",
     "lint": "eslint . --fix",
     "lamp-build": "npm run build -- --base /~safkclan/",

@@ -2,6 +2,7 @@ import { Physics } from '@react-three/cannon';
 import { OrbitControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import EnergySelector from './components/ball/energy-selector';
+import Leaderboard from './components/multiplayer/leaderboard';
 import LevelOne from './levels/one';
 import Sky from './models/sky';
 
@@ -27,6 +28,7 @@ const Game = () => {
         </Physics>
       </Canvas>
       <EnergySelector />
+      <Leaderboard />
     </>
   );
 };

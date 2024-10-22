@@ -2,6 +2,7 @@ import React, { createContext, useCallback, useContext, useRef, useState } from 
 
 // Define the context type, including position, applyForce, setShootingAngle, and lastStationaryPosition
 type BallContextType = {
+  hits: number;
   position: [number, number, number];
   lastStationaryPosition: [number, number, number];
   state: 'aiming' | 'shooting' | 'rolling';
@@ -17,6 +18,7 @@ type BallContextType = {
 const BallContext = createContext<BallContextType | undefined>(undefined);
 export const BallProvider = ({ children }: { children: React.ReactNode }) => {
   const [position, setPosition] = useState<[number, number, number]>([0, 0, 0]);
+  const [hits, setHits] = useState(0);
   const [lastStationaryPosition, setLastStationaryPosition] = useState<[number, number, number]>([
     0, 10, 80,
   ]);
@@ -44,6 +46,9 @@ export const BallProvider = ({ children }: { children: React.ReactNode }) => {
         apiRef.current.applyForce([-forceX, 0, -forceZ], [0, 0, 0]); // Apply force
       }
       setState('rolling'); // Transition to rolling state
+      setHits((hits) => {
+        return hits + 1;
+      });
     },
     [state, shootingAngle],
   );
@@ -55,6 +60,7 @@ export const BallProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <BallContext.Provider
       value={{
+        hits,
         position,
         lastStationaryPosition,
         state,
