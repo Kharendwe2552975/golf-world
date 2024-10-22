@@ -16,7 +16,7 @@ const AimingArrow = ({ position }: { position: [number, number, number] }) => {
       if (state !== 'aiming') return;
 
       mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-      mouse.y = 1; //- (event.clientY / window.innerHeight) * 2 + 1;
+      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
       raycaster.setFromCamera(mouse, camera);
 
@@ -26,7 +26,7 @@ const AimingArrow = ({ position }: { position: [number, number, number] }) => {
 
       const deltaX = intersectPoint.x - position[0];
       const deltaZ = intersectPoint.z - position[2];
-      const angle = Math.atan2(deltaZ, deltaX);
+      const angle = Math.atan2(deltaZ, -deltaX);
 
       setRotationAngle(angle);
     };
