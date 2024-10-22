@@ -2,6 +2,7 @@ import { Physics } from '@react-three/cannon';
 import { OrbitControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import EnergySelector from './components/ball/energy-selector';
 import LevelCompletePopup from './components/info-level-complete';
 import LevelOne from './levels/one';
@@ -20,6 +21,13 @@ const Game = () => {
   const [level, setLevel] = useState(1);
   const [score, setScore] = useState(0);
   const [isLevelComplete, setIsLevelComplete] = useState(false);
+  const navigate = useNavigate();
+
+  const handleQuitGame = () => {
+    setScore(0);
+    setLevel(1);
+    navigate('/');
+  };
 
   // Simulate level completion (replace with actual game logic)
   const completeLevel = () => {
@@ -87,7 +95,7 @@ const Game = () => {
 
       {/* Simulate score update */}
       <button
-        onClick={increaseScore}
+        onClick={handleQuitGame}
         style={{
           position: 'absolute',
           bottom: 20,
@@ -96,7 +104,7 @@ const Game = () => {
           fontSize: '16px',
         }}
       >
-        Increase Score
+        Quit
       </button>
       <LevelCompletePopup isVisible={isLevelComplete} onClose={nextLevel} />
     </>
