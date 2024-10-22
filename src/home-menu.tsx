@@ -3,14 +3,26 @@ import '@/styles.css';
 import { Box, Button, Typography } from '@mui/material';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import startSound from '../src/assets/start.mp3';
 import MultiplayerModal from './components/multiplayer/multiplayer-modal';
 
 const GameMenu: React.FC = () => {
   const navigate = useNavigate();
+  const startAudio = new Audio(startSound);
+
   const handleStartGame = () => {
     navigate('/play');
     localStorage.removeItem('sessionCode');
     localStorage.setItem('hits', '0');
+    startAudio
+      .play()
+      .then(() => {
+        navigate('/play');
+      })
+      .catch((error) => {
+        console.error('Failed to play start sound:', error);
+        navigate('/play');
+      });
   };
 
   const handleSettings = () => {

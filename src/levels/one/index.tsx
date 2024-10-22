@@ -1,4 +1,5 @@
 import Ball from '@/components/ball/ball';
+import FlagWithPole from '@/components/goal-point-flag';
 import MultiplayerBalls from '@/components/multiplayer/multiplayer-ball';
 import { useRef } from 'react';
 import { Group } from 'three';
@@ -7,16 +8,20 @@ import Rail from './rails';
 
 const LevelOne = () => {
   const groupRef = useRef<Group>(null);
-  const holePosition = [0, 0, -80];
+  const holePosition: [number, number, number] = [0, 0, -80];
+  const holeCoords = { x: 5, z: 2 };
+
+  console.log('Rendering LevelOne');
 
   return (
     <group ref={groupRef}>
-      <GrassGround />
-      <Rail position={[0, 0, -100]} rotation={[0, Math.PI / 2, 0]} size={[10, 5, 110]} />
-      <Rail position={[-50, 1, 0]} />
-      <Rail position={[50, 1, 0]} />
-      <Rail position={[0, 1, 100]} rotation={[0, Math.PI / 2, 0]} size={[10, 5, 110]} />
-      <Ball />
+      <GrassGround holeCoords={holeCoords} />
+      <Rail position={[0, 0, -100]} rotation={[0, Math.PI / 2, 0]} size={[10, 10, 110]} />
+      <Rail position={[-50, 1, 0]} size={[10, 10, 200]} />
+      <Rail position={[50, 1, 0]} size={[10, 10, 200]} />
+      <Rail position={[0, 1, 100]} rotation={[0, Math.PI / 2, 0]} size={[10, 10, 110]} />
+      <Ball holePosition={holePosition} />
+      <FlagWithPole position={holePosition} />
       <MultiplayerBalls />
     </group>
   );
