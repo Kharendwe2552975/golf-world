@@ -1,6 +1,7 @@
 import { useFrame } from '@react-three/fiber';
 import { useRef } from 'react';
 import { MathUtils } from 'three';
+
 function Flag({ position }: { position: [number, number, number] }) {
   const flagRef = useRef(null);
 
@@ -22,7 +23,7 @@ function Flag({ position }: { position: [number, number, number] }) {
 function Pole({ position }: { position: [number, number, number] }) {
   return (
     <mesh position={position} receiveShadow>
-      <cylinderGeometry args={[0.5, 0.5, 72, 32]} />
+      <cylinderGeometry args={[0.5, 0.5, 36, 32]} /> {/* Reduced height */}
       <meshStandardMaterial color={'#ffffff'} />
     </mesh>
   );
@@ -36,11 +37,12 @@ function Hole({ position }: { position: [number, number, number] }) {
     </mesh>
   );
 }
+
 export default function FlagWithPole({ position }: { position: [number, number, number] }) {
   return (
     <group position={position}>
-      <Pole position={[0, 7.5, 0]} />
-      <Flag position={[5.2, 40, 1]} />
+      <Pole position={[0, 18, 0]} />
+      <Flag position={[6, 33, 0]} />
       <Hole position={[0, 0, 0]} />
     </group>
   );

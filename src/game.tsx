@@ -5,15 +5,15 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import EnergySelector from './components/ball/energy-selector';
 import LevelCompletePopup from './components/info-level-complete';
-import LevelOne from './levels/one';
+import LevelOne from './levels/one/';
 import Level2 from './levels/two';
 import Sky from './models/sky';
 
 const GetLevel = ({ level, increaseScore }: { level: number; increaseScore: () => void }) => {
   return level == 1 ? (
-    <LevelOne increaseScore={increaseScore} />
-  ) : (
     <Level2 increaseScore={increaseScore} />
+  ) : (
+    <LevelOne increaseScore={increaseScore} />
   );
 };
 

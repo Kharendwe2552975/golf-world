@@ -1,15 +1,17 @@
 //@ts-nocheck
-import FlagWithPole from '@/components/goal-point-flag';
 import { Ocean } from '@/components/ocean';
 import Rail from '@/components/rails';
 import { usePlane } from '@react-three/cannon';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useRef } from 'react';
 import { FrontSide, Group, Vector3 } from 'three';
+import Ball from '../../components/ball';
+import FlagWithPole from '../../components/goal-point-flag';
 import GrassGround from '../../components/grass';
+import MiniCamera from '../../components/mini-camera';
 
 const RotatingCylinder = ({
-  position = [0, 5, 0],
+  position = [0, 5],
   speed = 0.1,
 }: {
   position: [number, number, number];
@@ -51,10 +53,12 @@ const StagePlatform = ({ position = [0, 0, 0] }: { position: [number, number, nu
   return (
     <group position={position} ref={groupRef}>
       <GrassGround />
-      <Rail position={[0, 0, -100]} rotation={[0, Math.PI / 2, 0]} size={[10, 10, 110]} />
+      <Rail position={[0, 0, -100]} rotation={[0, Math.PI / 2, 0]} size={[5, 12, 110]} />{' '}
+      {/* Increased height */}
       <Rail position={[-50, 1, 0]} />
       <Rail position={[50, 1, 0]} />
-      <Rail position={[0, 1, 100]} rotation={[0, Math.PI / 2, 0]} size={[10, 10, 110]} />
+      <Rail position={[0, 0, 100]} rotation={[0, Math.PI / 2, 0]} size={[5, 12, 110]} />{' '}
+      {/* Increased height */}
     </group>
   );
 };
@@ -75,7 +79,8 @@ const Stage2 = ({ position }: { position: [number, number, number] }) => {
   return (
     <>
       <StagePlatform position={position} />
-      <FlagWithPole position={position} />
+      <FlagWithPole position={[position[0], position[1], position[2] - 85]} />{' '}
+      {/* Adjusted position */}
     </>
   );
 };
@@ -97,7 +102,7 @@ const InclinedPlane = ({ position = [0, 0, 0], angle = 0, size = [80, 80] }) => 
 
 const Level2 = ({ increaseScore }: { increaseScore: () => void }) => {
   const groupRef = useRef<Group>(null);
-  const holePosition = [0, 0, -80];
+  const holePosition = [0, 0, -100]; // Adjusted hole position
   const { camera } = useThree();
   const ocean = useRef();
   camera.position.set(0, 0, 500);
@@ -128,7 +133,8 @@ const Level2 = ({ increaseScore }: { increaseScore: () => void }) => {
       <group rotation={[0, 0, 0]}>
         <InclinedPlane position={[0, 20, 0]} angle={Math.PI / 3} />
       </group>
-      {/* <Ball init_position={[0, 20, 300]} increaseScore={increaseScore} /> */}
+      <Ball position={[0, 20, 300]} /> {/* Added Ball component */}
+      <MiniCamera position={[0, 10, 0]} />
     </group>
   );
 };
