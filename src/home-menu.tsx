@@ -1,4 +1,5 @@
 // src/components/GameMenu.tsx
+import meunBg from '@/assets/menu-bg.jpeg';
 import '@/styles.css';
 import { Box, Button, Typography } from '@mui/material';
 import React, { useState } from 'react';
@@ -46,7 +47,7 @@ const GameMenu: React.FC = () => {
         justifyContent="center"
         height="100vh"
         color="white"
-        sx={{ backgroundImage: 'url("/menu-bg.jpeg")', backgroundSize: 'cover' }}
+        sx={{ backgroundImage: `url(${meunBg})`, backgroundSize: 'cover' }}
       >
         <Box
           display="flex"

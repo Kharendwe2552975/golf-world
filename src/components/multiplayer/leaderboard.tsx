@@ -13,7 +13,6 @@ import useMultiplayerGameState from './use-multiplayer-state';
 const Leaderboard = () => {
   const { players, hits, localHits: myHits } = useMultiplayerGameState();
   const storedName = localStorage.getItem('playerName');
-
   return (
     <div
       style={{

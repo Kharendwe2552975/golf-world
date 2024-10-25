@@ -1,6 +1,6 @@
 import { useBox, useCylinder } from '@react-three/cannon';
 import { shaderMaterial } from '@react-three/drei';
-import { extend, ReactThreeFiber } from '@react-three/fiber';
+import { extend } from '@react-three/fiber';
 import * as THREE from 'three';
 import { fragmentShader } from './shaders/fragmentShader';
 import { vertexShader } from './shaders/vertexShader';
@@ -19,17 +19,6 @@ const CustomMaterial = shaderMaterial(
 );
 
 extend({ CustomMaterial });
-
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      customMaterial: ReactThreeFiber.Object3DNode<
-        THREE.ShaderMaterial,
-        typeof THREE.ShaderMaterial
-      >;
-    }
-  }
-}
 
 // Create a tile with a circular hole
 function createTileWithHole(size: number, holeRadius: number) {
@@ -54,40 +43,35 @@ function createTileWithHole(size: number, holeRadius: number) {
   return geometry;
 }
 
-// GrassBlock component with the hole implemented here
-function GrassBlock({
-  position,
-  hasHole,
-}: {
-  position: [number, number, number];
-  color: string;
-  hasHole: boolean;
-}) {
+function GrassBlock({ position }: { position: [number, number, number] }) {
   const randomHeight = THREE.MathUtils.randFloat(0.2, 0.4);
 
-  // Ref for physics box or cylinder
-  let ref: React.MutableRefObject<THREE.Mesh>;
-  let geometry: THREE.BufferGeometry;
+  // Ref for physics box
+  const [ref] = useBox(() => ({
+    args: [10, randomHeight, 10],
+    position,
+    type: 'Static',
+    contactHardness: 0.5,
+  })) as [React.MutableRefObject<THREE.Mesh>, any]; // Correctly destructure the tuple
 
-  if (hasHole) {
-    geometry = createTileWithHole(10, 3); // Create tile geometry with a hole
+  return (
+    <mesh ref={ref} position={position} receiveShadow castShadow>
+      <boxGeometry args={[10, randomHeight, 10]} />
+      {/* @ts-ignore */}
+      <customMaterial attach="material" uTexture={grassTexture} />
+    </mesh>
+  );
+}
 
-    [ref] = useCylinder(() => ({
-      args: [3, 3, 0.1, 32],
-      position: [position[0], position[1], position[2]],
-      type: 'Static',
-      collisionFilterGroup: 0,
-    })) as [React.MutableRefObject<THREE.Mesh>, any]; // Correctly destructure the tuple
-  } else {
-    geometry = new THREE.BoxGeometry(10, randomHeight, 10);
+function HoleBlock({ position }: { position: [number, number, number] }) {
+  const geometry = createTileWithHole(10, 3);
 
-    [ref] = useBox(() => ({
-      args: [10, randomHeight, 10],
-      position,
-      type: 'Static',
-      contactHardness: 0.5,
-    })) as [React.MutableRefObject<THREE.Mesh>, any]; // Correctly destructure the tuple
-  }
+  const [ref] = useCylinder(() => ({
+    args: [3, 3, 0.1, 32],
+    position: [position[0], position[1], position[2]],
+    type: 'Static',
+    collisionFilterGroup: 0,
+  })) as [React.MutableRefObject<THREE.Mesh>, any]; // Correctly destructure the tuple
 
   return (
     <mesh ref={ref} position={position} receiveShadow castShadow rotation={[0, 0, 0]}>
@@ -112,14 +96,13 @@ const GrassGround = ({ holeCoords }: { holeCoords: { x: number; z: number } }) =
       // Check if this tile should have the hole (block 5 at the second row)
       const hasHole = x === holeCoords.x && z === holeCoords.z;
 
-      const color = (x + z) % 2 === 0 ? '#39d353' : '#28a745';
+      // const color = (x + z) % 2 === 0 ? '#39d353' : '#28a745';
       tiles.push(
-        <GrassBlock
-          key={`${x}-${z}`}
-          position={[worldX, 0, worldZ]}
-          color={color}
-          hasHole={hasHole}
-        />,
+        hasHole ? (
+          <HoleBlock key={`${x}-${z}`} position={[worldX, 0, worldZ]} />
+        ) : (
+          <GrassBlock key={`${x}-${z}`} position={[worldX, 0, worldZ]} />
+        ),
       );
     }
   }

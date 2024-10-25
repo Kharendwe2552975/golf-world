@@ -11,7 +11,7 @@ const useMultiplayerGameState = () => {
   );
   const [hits, setHits] = useState<{ [key: string]: number }>({}); // Store hits for each player
 
-  const { position: localPosition, hits: localHits } = useBall(); // Get the local position and hits
+  const { getPosition, hits: localHits } = useBall(); // Get the local position and hits
 
   // Fetch game state from the server
   const fetchGameState = async () => {
@@ -20,9 +20,21 @@ const useMultiplayerGameState = () => {
     );
     const data = await response.json();
     if (data.status === 'success') {
-      setPlayers(data['state'].players);
-      setBallPositions(data['state'].ballPositions); // Store ball positions
-      setHits(data['state'].hits); // Store hits for each player
+      setPlayers(Object.keys(data['state'].players));
+      // Extract ball positions and hits for convenience
+      const newBallPositions: { [key: string]: [number, number, number] } = {};
+      const newHits: { [key: string]: number } = {};
+      Object.entries(data['state'].players).forEach(([name, details]: any) => {
+        newBallPositions[name] = [
+          details.ballPosition.x,
+          details.ballPosition.y,
+          details.ballPosition.z,
+        ];
+        newHits[name] = details.hits;
+      });
+
+      setBallPositions(newBallPositions);
+      setHits(newHits);
     }
   };
 
@@ -30,6 +42,7 @@ const useMultiplayerGameState = () => {
   const updateGameState = async () => {
     if (!playerName) return;
     const serverPosition = ballPositions[playerName];
+    const localPosition = getPosition();
 
     // Compare local position with server position
     if (
@@ -63,10 +76,10 @@ const useMultiplayerGameState = () => {
     const interval = setInterval(() => {
       fetchGameState(); // Fetch game state every second
       updateGameState(); // Update game state if positions are different
-    }, 100);
+    }, 1000);
 
     return () => clearInterval(interval); // Cleanup on unmount
-  }, [localPosition, ballPositions]); // Re-run if localPosition or ballPositions changes
+  }, [ballPositions]); // Re-run if localPosition or ballPositions changes
 
   return { players, ballPositions, hits, playerName, localHits }; // Expose relevant data
 };

@@ -9,32 +9,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
+// Database credentials
+$host = "127.0.0.1";
+$db = "d2556833";
+$user = "s2556833";
+$pass = "sd2556833";
+
+// Create a new MySQLi connection
+$conn = mysqli_connect($host, $user, $pass, $db);
+
+// Check connection
+if (!$conn) {
+    die(json_encode(['status' => 'error', 'message' => 'Database connection failed: ' . mysqli_connect_error()]));
+}
+
 // Get player name from POST request
 $playerName = $_POST['playerName'];
 
 // Generate a unique session code (e.g., random string of 6 characters)
 $sessionCode = strtoupper(substr(md5(uniqid(mt_rand(), true)), 0, 6));
 
-// Load existing sessions
-$filename = 'sessions.json';
-if (file_exists($filename)) {
-    $sessions = json_decode(file_get_contents($filename), true);
-} else {
-    $sessions = [];
+// Create a new session in the database
+try {
+    // Insert the new session into the `sessions` table
+    $stmt = $conn->prepare("INSERT INTO sessions (session_code, current_level, game_state) VALUES (?, 1, 'waiting')");
+    $stmt->bind_param('s', $sessionCode);
+    $stmt->execute();
+
+    // Insert the player into the `players` table
+    $stmt = $conn->prepare("INSERT INTO players (session_code, player_name, hits, ball_position_x, ball_position_y, ball_position_z) 
+                            VALUES (?, ?, 0, 0, 0, 0)");
+    $stmt->bind_param('ss', $sessionCode, $playerName);
+    $stmt->execute();
+
+    // Return the session code to the player
+    echo json_encode(['status' => 'success', 'sessionCode' => $sessionCode]);
+
+} catch (Exception $e) {
+    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
 }
 
-// Create a new session with the player's name
-$sessions[$sessionCode] = [
-    'players' => [$playerName],
-    'ballPositions' => [$playerName => [0, 0, 0]], // Start position for player
-    'hits' => [$playerName => 0], // Initial hits
-    'currentLevel' => 1, // Initial level
-    'gameState' => 'waiting' // Set game state to 'waiting' initially
-];
-
-// Save the updated sessions back to the file
-file_put_contents($filename, json_encode($sessions));
-
-// Return the session code to the player
-echo json_encode(['status' => 'success', 'sessionCode' => $sessionCode]);
+// Close the MySQLi connection
+$conn->close();
 ?>

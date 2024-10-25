@@ -1,10 +1,8 @@
 import { useFrame, useThree } from '@react-three/fiber';
 import { useRef } from 'react';
-import { useBall } from './ball-provider';
 
 // Custom component to handle camera position and movement
-const CameraController = () => {
-  const { position: ballPosition } = useBall(); // Get the ball position from context
+const CameraController = ({ ballPosition }: { ballPosition: [number, number, number] | null }) => {
   const { camera } = useThree(); // Access the camera
   const cameraOffset = useRef<[number, number, number]>([0, 80, 80]); // Offset for the camera
 

@@ -1,11 +1,10 @@
 // Import audio files
+import { useGame } from '@/game-context';
 import { useSphere } from '@react-three/cannon';
 import { shaderMaterial } from '@react-three/drei';
 import { extend } from '@react-three/fiber';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import * as THREE from 'three';
-import hitSound from '../../assets/hit.mp3';
-import winSound from '../../assets/win.mp3';
 import { fragmentShader } from '../shaders/fragmentShader';
 import { vertexShader } from '../shaders/vertexShader';
 import { ballTexture } from '../textures/ballTexture';
@@ -28,16 +27,7 @@ const CustomMaterial = shaderMaterial(
 extend({ CustomMaterial });
 
 const Ball = ({ holePosition }: { holePosition: [number, number, number] }) => {
-  const holeRadius = 3; // Same as in your tile with hole
-  const hitAudio = new Audio(hitSound);
-  const winAudio = new Audio(winSound);
-
-  // Preload audio files
-  useEffect(() => {
-    hitAudio.load();
-    winAudio.load();
-  }, [hitAudio, winAudio]);
-
+  const [position, setPosition] = useState<[number, number, number]>([0, 10, 80]);
   const [ref, api] = useSphere(() => ({
     mass: 0.045,
     position: [0, 10, 80],
@@ -50,47 +40,46 @@ const Ball = ({ holePosition }: { holePosition: [number, number, number] }) => {
     linearDamping: 0.3, // To slow down rolling
     angularDamping: 0.4, // To slow down rolling
     airResistance: 0.01,
-    onCollide: () => {
-      hitAudio.play().catch((error) => {
-        console.error('Failed to play hit sound:', error);
-      });
-    },
+    // onCollide: () => {
+    //   hitAudio.play().catch((error) => {
+    //     console.error('Failed to play hit sound:', error);
+    //   });
+    // },
   }));
 
-  const {
-    state,
-    setState,
-    position,
-    setPosition,
-    lastStationaryPosition,
-    setLastStationaryPosition,
-    applyApi,
-  } = useBall();
+  const { setLevelCompleted } = useGame();
+  const { state, setState, lastStationaryPosition, setLastStationaryPosition, applyApi } =
+    useBall();
   // Use useCallback to ensure applyApi is not re-created on every render
   const stableApplyApi = useCallback(() => applyApi(api), [api, applyApi]);
-
   useEffect(() => {
     stableApplyApi();
 
     const unsubscribePosition = api.position.subscribe((pos) => {
-      setPosition([pos[0], pos[1], pos[2]]);
+      const tolerance = 0.1; // Higher error tolerance better performance
+
+      const newPos: [number, number, number] = [pos[0], pos[1], pos[2]];
+      if (
+        Math.abs(newPos[0] - position[0]) > tolerance ||
+        Math.abs(newPos[1] - position[1]) > tolerance ||
+        Math.abs(newPos[2] - position[2]) > tolerance
+      ) {
+        setPosition(newPos);
+      }
 
       if (pos[1] < 0) {
         const distanceToHole = Math.sqrt(
           (pos[0] - holePosition[0]) ** 2 + (pos[2] - holePosition[2]) ** 2,
         );
-        if (distanceToHole < holeRadius) {
-          winAudio.play().catch((error) => {
-            console.error('Failed to play win sound:', error);
-          });
+        if (distanceToHole < 4) {
+          setLevelCompleted(true);
         }
       }
 
-      // Check if the ball is out of bounds
       if (pos[1] < -20) {
-        // Reset the ball to the last stationary position
+        api.velocity.set(0, 0, 0);
         api.position.set(...lastStationaryPosition);
-        api.velocity.set(0, 0, 0); // Stop any movement
+        api.velocity.set(0, 0, 0);
         setState('aiming');
       }
     });
@@ -99,22 +88,15 @@ const Ball = ({ holePosition }: { holePosition: [number, number, number] }) => {
       const isStationary = velocity.every((v) => Math.abs(v) < 0.5);
       if (state === 'rolling' && isStationary) {
         setState('aiming');
-        setLastStationaryPosition(position); // Set last stationary position
+        setLastStationaryPosition(position);
       }
     });
 
     return () => {
-      unsubscribePosition(); // Clean up subscription
-      unsubscribeVelocity(); // Clean up subscription
+      unsubscribePosition();
+      unsubscribeVelocity();
     };
-  }, [
-    state,
-    setPosition,
-    stableApplyApi,
-    position,
-    lastStationaryPosition,
-    setLastStationaryPosition,
-  ]);
+  }, [stableApplyApi, state, position, lastStationaryPosition, holePosition]); // Avoid passing large objects as dependencies
 
   return (
     <>
@@ -126,7 +108,7 @@ const Ball = ({ holePosition }: { holePosition: [number, number, number] }) => {
       </mesh>
 
       {state !== 'rolling' && <AimingArrow position={position} />}
-      <CameraController />
+      <CameraController ballPosition={position} />
     </>
   );
 };

@@ -4,33 +4,43 @@ import { useNavigate } from 'react-router-dom';
 
 interface LobbyProps {
   sessionCode: string;
-  creatorName: string; // Add creator name prop
-  currentPlayerName: string; // Add current player's name prop
+  creatorName: string;
+  currentPlayerName: string;
 }
 
 const Lobby: React.FC<LobbyProps> = ({ sessionCode, creatorName, currentPlayerName }) => {
-  const [players, setPlayers] = useState<string[]>([]);
+  const [players, setPlayers] = useState<{
+    [key: string]: { hits: number; ballPosition: { x: number; y: number; z: number } };
+  }>({});
   const navigate = useNavigate();
+
   const onStartGame = async () => {
     navigate('/play'); // Navigate to the play route
   };
 
   const fetchPlayers = async () => {
-    const response = await fetch(
-      `${import.meta.env.VITE_SERVER_URL}/get-game-state.php?sessionCode=${sessionCode}`,
-    );
-    const data = await response.json();
-    if (data.status === 'success') {
-      setPlayers(data['state'].players);
-      if (data['state'].gameState === 'ongoing') {
-        navigate('/play');
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_SERVER_URL}/get-game-state.php?sessionCode=${sessionCode}`,
+      );
+      const data = await response.json();
+
+      if (data.status === 'success') {
+        // Set players as the object received from the server
+        setPlayers(data['state'].players || {});
+
+        if (data['state'].gameState === 'ongoing') {
+          navigate('/play');
+        }
       }
+    } catch (error) {
+      console.error('Error fetching players:', error);
     }
   };
 
   useEffect(() => {
     fetchPlayers(); // Fetch players on mount
-    const interval = setInterval(fetchPlayers, 5000); // Fetch players every 5 seconds
+    const interval = setInterval(fetchPlayers, 1000); // Fetch players every second
 
     return () => clearInterval(interval); // Cleanup on unmount
   }, [sessionCode]);
@@ -40,13 +50,15 @@ const Lobby: React.FC<LobbyProps> = ({ sessionCode, creatorName, currentPlayerNa
       <Typography variant="h6">Lobby - Session Code: {sessionCode}</Typography>
       <Typography variant="body1">Players:</Typography>
       <Box sx={{ marginLeft: 2, marginBottom: 2 }}>
-        {players.map((player, index) => (
-          <Typography key={index}>{index + 1 + ' : ' + player}</Typography> // Display player number
+        {Object.entries(players).map(([playerName], index) => (
+          <Typography key={index}>
+            {index + 1} : {playerName}
+          </Typography>
         ))}
       </Box>
 
       <Box>
-        {currentPlayerName === creatorName && ( // Check if the current player is the creator
+        {currentPlayerName === creatorName && (
           <Button variant="contained" color="primary" onClick={onStartGame}>
             Start Game
           </Button>

@@ -1,8 +1,8 @@
+import grass from '@/assets/grass.png';
 import { RepeatWrapping, TextureLoader } from 'three';
-
 // Load the grass texture from the public folder
 const textureLoader = new TextureLoader();
-export const grassTexture = textureLoader.load('/grass.png');
+export const grassTexture = textureLoader.load(grass);
 
 // Set the wrapping and repeat for the grass texture
 grassTexture.wrapS = grassTexture.wrapT = RepeatWrapping;

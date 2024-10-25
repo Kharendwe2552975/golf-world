@@ -1,23 +1,22 @@
 import React, { createContext, useCallback, useContext, useRef, useState } from 'react';
 
-// Define the context type, including position, applyForce, setShootingAngle, and lastStationaryPosition
+// Define the context type, including hits, state, applyForce, setShootingAngle, lastStationaryPosition, and getPosition
 type BallContextType = {
   hits: number;
-  position: [number, number, number];
   lastStationaryPosition: [number, number, number];
   state: 'aiming' | 'shooting' | 'rolling';
   setState: (state: 'aiming' | 'shooting' | 'rolling') => void;
-  setPosition: (pos: [number, number, number]) => void;
   applyForce: (strength: number) => void;
   setShootingAngle: (angle: number) => void;
   applyApi: (api: any) => void;
   setLastStationaryPosition: (pos: [number, number, number]) => void;
+  getPosition: () => [number, number, number]; // Function to get the current position
 };
 
 // Create the context
 const BallContext = createContext<BallContextType | undefined>(undefined);
+
 export const BallProvider = ({ children }: { children: React.ReactNode }) => {
-  const [position, setPosition] = useState<[number, number, number]>([0, 0, 0]);
   const [hits, setHits] = useState(0);
   const [lastStationaryPosition, setLastStationaryPosition] = useState<[number, number, number]>([
     0, 10, 80,
@@ -46,9 +45,7 @@ export const BallProvider = ({ children }: { children: React.ReactNode }) => {
         apiRef.current.applyForce([-forceX, 0, -forceZ], [0, 0, 0]); // Apply force
       }
       setState('rolling'); // Transition to rolling state
-      setHits((hits) => {
-        return hits + 1;
-      });
+      setHits((hits) => hits + 1);
     },
     [state, shootingAngle],
   );
@@ -57,19 +54,26 @@ export const BallProvider = ({ children }: { children: React.ReactNode }) => {
     apiRef.current = api;
   }, []);
 
+  const getPosition = useCallback((): [number, number, number] => {
+    if (apiRef.current) {
+      const { x, y, z } = apiRef.current.position;
+      return [x, y, z];
+    }
+    return [0, 0, 0];
+  }, []);
+
   return (
     <BallContext.Provider
       value={{
         hits,
-        position,
         lastStationaryPosition,
         state,
         setState,
-        setPosition,
         applyForce,
         setShootingAngle,
         applyApi,
         setLastStationaryPosition,
+        getPosition,
       }}
     >
       {children}

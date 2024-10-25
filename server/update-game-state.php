@@ -9,43 +9,64 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-// Get session code, player name, ball position, and hits from POST request
+// Database credentials
+$host = "127.0.0.1";
+$db = "d2556833";
+$user = "s2556833";
+$pass = "sd2556833";
+
+// Create a new MySQLi connection
+$conn = mysqli_connect($host, $user, $pass, $db);
+
+// Check connection
+if (!$conn) {
+    die(json_encode(['status' => 'error', 'message' => 'Database connection failed: ' . mysqli_connect_error()]));
+}
+
+// Get session code, player name, ball position, hits, and current level from POST request
 $sessionCode = $_POST['sessionCode'];
 $playerName = $_POST['playerName'];
 $ballPosition = json_decode($_POST['ballPosition'], true);  // Expecting [x, y, z] coordinates
 $hits = $_POST['hits'];  // Number of hits made by the player
 $currentLevel = $_POST['currentLevel']; // Current level of the game
 
-// Load existing sessions
-$filename = 'sessions.json';
-if (file_exists($filename)) {
-    $sessions = json_decode(file_get_contents($filename), true);
-} else {
-    echo json_encode(['status' => 'error', 'message' => 'No active sessions found.']);
-    exit;
-}
+// Verify that the session exists
+$sessionQuery = $conn->prepare("SELECT game_state FROM sessions WHERE session_code = ?");
+$sessionQuery->bind_param('s', $sessionCode);
+$sessionQuery->execute();
+$sessionResult = $sessionQuery->get_result();
 
-// Check if session exists
-if (isset($sessions[$sessionCode])) {
+if ($sessionResult->num_rows > 0) {
+    $sessionData = $sessionResult->fetch_assoc();
+
     // Update ball position and hits for the player
-    $sessions[$sessionCode]['ballPositions'][$playerName] = $ballPosition;
-    $sessions[$sessionCode]['hits'][$playerName] = $hits;
+    $updatePlayerQuery = $conn->prepare("
+        UPDATE players 
+        SET hits = ?, ball_position_x = ?, ball_position_y = ?, ball_position_z = ? 
+        WHERE session_code = ? AND player_name = ?
+    ");
+    $updatePlayerQuery->bind_param('idddss', $hits, $ballPosition[0], $ballPosition[1], $ballPosition[2], $sessionCode, $playerName);
+    $updatePlayerQuery->execute();
 
     // Optionally update the current level
     if (!empty($currentLevel)) {
-        $sessions[$sessionCode]['currentLevel'] = $currentLevel;
+        $updateLevelQuery = $conn->prepare("UPDATE sessions SET current_level = ? WHERE session_code = ?");
+        $updateLevelQuery->bind_param('is', $currentLevel, $sessionCode);
+        $updateLevelQuery->execute();
     }
 
     // Change game state to 'ongoing' if it was 'waiting'
-    if ($sessions[$sessionCode]['gameState'] === 'waiting') {
-        $sessions[$sessionCode]['gameState'] = 'ongoing';
+    if ($sessionData['game_state'] === 'waiting') {
+        $updateGameStateQuery = $conn->prepare("UPDATE sessions SET game_state = 'ongoing' WHERE session_code = ?");
+        $updateGameStateQuery->bind_param('s', $sessionCode);
+        $updateGameStateQuery->execute();
     }
-
-    // Save the updated sessions back to the file
-    file_put_contents($filename, json_encode($sessions));
 
     echo json_encode(['status' => 'success', 'message' => 'Game state updated.']);
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Invalid session code.']);
 }
+
+// Close the MySQLi connection
+$conn->close();
 ?>

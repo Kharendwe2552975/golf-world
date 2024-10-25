@@ -3,14 +3,24 @@ import { OrbitControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import EnergySelector from './components/ball/energy-selector';
 import Leaderboard from './components/multiplayer/leaderboard';
+import WinMessage from './components/win-message';
+import { useGame } from './game-context';
 import LevelOne from './levels/one';
 import Sky from './models/sky';
 
 const GetLevel = () => {
-  return <LevelOne />;
+  const { currentLevel } = useGame();
+  switch (currentLevel) {
+    case 1:
+      return <LevelOne />;
+    default:
+      return <LevelOne />;
+  }
 };
 
 const Game = () => {
+  const { levelCompleted } = useGame();
+
   return (
     <>
       <Canvas
@@ -29,6 +39,7 @@ const Game = () => {
       </Canvas>
       <EnergySelector />
       <Leaderboard />
+      {levelCompleted && <WinMessage />}
     </>
   );
 };
