@@ -99,7 +99,7 @@ function GrassBlock({
 }
 
 // Main ground layout
-const GrassGround = ({ holeCoords }: { holeCoords: { x: number; z: number } }) => {
+const GrassGround = ({ holeCoords }: { holeCoords?: { x: number; z: number } }) => {
   const tiles = [];
   const numTilesX = 10;
   const numTilesZ = 20;
@@ -109,8 +109,8 @@ const GrassGround = ({ holeCoords }: { holeCoords: { x: number; z: number } }) =
       const worldX = -50 + x * 10;
       const worldZ = -100 + z * 10;
 
-      // Check if this tile should have the hole (block 5 at the second row)
-      const hasHole = x === holeCoords.x && z === holeCoords.z;
+      // Check if this tile should have the hole (block 5 at the second row) if holeCoords is defined
+      const hasHole = holeCoords ? x === holeCoords.x && z === holeCoords.z : false;
 
       const color = (x + z) % 2 === 0 ? '#39d353' : '#28a745';
       tiles.push(
