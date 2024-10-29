@@ -5,6 +5,7 @@ import { useGame } from '@/game-context';
 import { useRef } from 'react';
 import { Group } from 'three';
 import GrassGround from '../../components/grass';
+import MiniCamera from '../../components/mini-camera';
 import Rail from './rails';
 
 const LevelOne = () => {
@@ -22,6 +23,7 @@ const LevelOne = () => {
       {!levelCompleted && <Ball holePosition={holePosition} />}
       <FlagWithPole position={holePosition} />
       <MultiplayerBalls />
+      <MiniCamera position={[0, -10, 0]} />
     </group>
   );
 };
