@@ -1,46 +1,65 @@
 import { useSphere } from '@react-three/cannon';
-import { useCallback, useEffect, useRef } from 'react';
-import { Mesh } from 'three';
-import AimingArrow from './aiming-arrow';
-import { useBall } from './ball-provider';
-import CameraController from './camera-controller';
+import { shaderMaterial } from '@react-three/drei';
+import { extend } from '@react-three/fiber';
+import { useCallback, useEffect, useState } from 'react';
+import * as THREE from 'three';
+import { useGame } from '../../game-context';
 
-const Ball = ({
-  increaseScore,
-  init_position = [0, 10, 80],
-}: {
-  increaseScore: () => void;
-  init_position: [number, number, number];
-}) => {
-  // Ref type corrected for Mesh
-  const ref = useRef<Mesh>(null);
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      customMaterial: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
+        attach: string;
+        uTexture: THREE.Texture;
+      };
+    }
+  }
+}
 
-  const [_, api] = useSphere(
-    () => ({
-      mass: 0.045,
-      position: init_position,
-      args: [2],
-      material: {
-        friction: 0.1,
-        restitution: 0.1,
-        rollingFriction: 0.05,
-      },
-      linearDamping: 0.3,
-      angularDamping: 0.4,
-      airResistance: 0.01,
-    }),
-    ref,
-  ); // Pass the ref here
+import AimingArrow from '../ball/aiming-arrow';
+import { useBall } from '../ball/ball-provider';
+import CameraController from '../ball/camera-controller';
+import { fragmentShader } from '../shaders/fragmentShader';
+import { vertexShader } from '../shaders/vertexShader';
+import { ballTexture } from '../textures/ballTexture';
+import { greenBallTexture } from '../textures/greenBallTexture';
+import { orangeBallTexture } from '../textures/orangeBallTexture';
+import { purpleBallTexture } from '../textures/purpleBallTexture';
 
-  const {
-    state,
-    setState,
-    position,
-    setPosition,
-    lastStationaryPosition,
-    setLastStationaryPosition,
-    applyApi,
-  } = useBall();
+import { redBallTexture } from '../textures/redBallTexture';
+
+const CustomMaterial = shaderMaterial(
+  {
+    uTexture: ballTexture,
+    uLightPosition: new THREE.Vector3(30, 50, 30),
+    uLightColor: new THREE.Color(1, 1, 1),
+    uAmbientLight: new THREE.Color(0.2, 0.2, 0.2),
+  },
+  vertexShader,
+  fragmentShader,
+);
+
+extend({ CustomMaterial });
+
+const Ball = ({ holePosition }: { holePosition: [number, number, number] }) => {
+  const [position, setPosition] = useState<[number, number, number]>([0, 10, 80]);
+  const [ref, api] = useSphere(() => ({
+    mass: 0.045,
+    position: [0, 10, 80],
+    args: [2],
+    material: {
+      friction: 0.1,
+      restitution: 0.1,
+      rollingFriction: 0.05,
+    },
+    linearDamping: 0.3,
+    angularDamping: 0.4,
+    airResistance: 0.01,
+  }));
+
+  const { setLevelCompleted } = useGame();
+  const { state, setState, lastStationaryPosition, setLastStationaryPosition, applyApi, texture } =
+    useBall();
 
   const stableApplyApi = useCallback(() => applyApi(api), [api, applyApi]);
 
@@ -48,9 +67,28 @@ const Ball = ({
     stableApplyApi();
 
     const unsubscribePosition = api.position.subscribe((pos) => {
-      setPosition([pos[0], pos[1], pos[2]]);
+      const tolerance = 0.1;
+
+      const newPos: [number, number, number] = [pos[0], pos[1], pos[2]];
+      if (
+        Math.abs(newPos[0] - position[0]) > tolerance ||
+        Math.abs(newPos[1] - position[1]) > tolerance ||
+        Math.abs(newPos[2] - position[2]) > tolerance
+      ) {
+        setPosition(newPos);
+      }
 
       if (pos[1] < 0) {
+        const distanceToHole = Math.sqrt(
+          (pos[0] - holePosition[0]) ** 2 + (pos[2] - holePosition[2]) ** 2,
+        );
+        if (distanceToHole < 4) {
+          setLevelCompleted(true);
+        }
+      }
+
+      if (pos[1] < -20) {
+        api.velocity.set(0, 0, 0);
         api.position.set(...lastStationaryPosition);
         api.velocity.set(0, 0, 0);
         setState('aiming');
@@ -62,7 +100,6 @@ const Ball = ({
       if (state === 'rolling' && isStationary) {
         setState('aiming');
         setLastStationaryPosition(position);
-        increaseScore();
       }
     });
 
@@ -70,24 +107,32 @@ const Ball = ({
       unsubscribePosition();
       unsubscribeVelocity();
     };
-  }, [
-    state,
-    setPosition,
-    stableApplyApi,
-    position,
-    lastStationaryPosition,
-    setLastStationaryPosition,
-    increaseScore,
-  ]);
+  }, [stableApplyApi, state, position, lastStationaryPosition, holePosition]);
+
+  const getTexture = (texture: string) => {
+    switch (texture) {
+      case '/redBall.png':
+        return redBallTexture;
+      case '/greenBall.png':
+        return greenBallTexture;
+      case '/orangeBall.png':
+        return orangeBallTexture;
+      case '/purpleBall.png':
+        return purpleBallTexture;
+      default:
+        return ballTexture;
+    }
+  };
+
   return (
     <>
-      <mesh ref={ref} castShadow>
+      <mesh ref={ref} castShadow receiveShadow>
         <sphereGeometry args={[2, 32, 32]} />
-        <meshStandardMaterial color="white" />
+        <customMaterial attach="material" uTexture={getTexture(texture)} />
       </mesh>
 
       {state !== 'rolling' && <AimingArrow position={position} />}
-      <CameraController />
+      <CameraController ballPosition={position} />
     </>
   );
 };

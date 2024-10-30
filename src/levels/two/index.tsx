@@ -5,7 +5,7 @@ import { usePlane } from '@react-three/cannon';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useRef } from 'react';
 import { FrontSide, Group, Vector3 } from 'three';
-import Ball from '../../components/ball';
+import Ball from '../../components/ball/ball';
 import FlagWithPole from '../../components/goal-point-flag';
 import GrassGround from '../../components/grass';
 import MiniCamera from '../../components/mini-camera';
