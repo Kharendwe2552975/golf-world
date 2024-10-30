@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import startSound from '../src/assets/start.mp3';
 import MultiplayerModal from './components/multiplayer/multiplayer-modal';
+import TextureSelectionModal from './components/TextureSelectionModal';
 
 const GameMenu: React.FC = () => {
   const navigate = useNavigate();
@@ -34,9 +35,13 @@ const GameMenu: React.FC = () => {
     console.log('Exit Game');
   };
 
-  const [open, setOpen] = useState(false);
-  const handleOpenModal = () => setOpen(true);
-  const handleCloseModal = () => setOpen(false);
+  const [openMultiplayer, setOpenMultiplayer] = useState(false);
+  const handleOpenMultiplayerModal = () => setOpenMultiplayer(true);
+  const handleCloseMultiplayerModal = () => setOpenMultiplayer(false);
+
+  const [openTexture, setOpenTexture] = useState(false);
+  const handleOpenTextureModal = () => setOpenTexture(true);
+  const handleCloseTextureModal = () => setOpenTexture(false);
 
   return (
     <>
@@ -76,10 +81,18 @@ const GameMenu: React.FC = () => {
           <Button
             variant="contained"
             color="warning"
-            onClick={handleOpenModal}
+            onClick={handleOpenMultiplayerModal}
             sx={{ marginBottom: 2, width: 200 }}
           >
             Multiplayer
+          </Button>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={handleOpenTextureModal}
+            sx={{ marginBottom: 2, width: 200 }}
+          >
+            Select Ball Texture
           </Button>
           <Button
             variant="contained"
@@ -95,7 +108,9 @@ const GameMenu: React.FC = () => {
         </Box>
       </Box>
       {/* Multiplayer Modal */}
-      <MultiplayerModal open={open} onClose={handleCloseModal} />
+      <MultiplayerModal open={openMultiplayer} onClose={handleCloseMultiplayerModal} />
+      {/* Texture Selection Modal */}
+      <TextureSelectionModal open={openTexture} onClose={handleCloseTextureModal} />
     </>
   );
 };

@@ -9,7 +9,7 @@
     "**/dist": true,
     "**/eslint**": true,
     "**/node_modules": true,
-    "**/public": true
+    "**/public": false
   },
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {

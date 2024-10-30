@@ -1,9 +1,9 @@
 import { RepeatWrapping, TextureLoader } from 'three';
 
-// Load the golf ball texture from the public folder
+// Load the purple ball texture from the public folder
 const textureLoader = new TextureLoader();
-export const ballTexture = textureLoader.load('/purpleBall.png');
+export const purpleBallTexture = textureLoader.load('/purpleBall.png');
 
-// Set the wrapping and repeat for the golf ball texture
-ballTexture.wrapS = ballTexture.wrapT = RepeatWrapping;
-ballTexture.repeat.set(1, 1);
+// Set the wrapping and repeat for the purple ball texture
+purpleBallTexture.wrapS = purpleBallTexture.wrapT = RepeatWrapping;
+purpleBallTexture.repeat.set(1, 1);
