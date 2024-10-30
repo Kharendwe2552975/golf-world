@@ -4,12 +4,12 @@
     "**/.husky": true,
     "**/**.prettier**": true,
     "**/**config**": true,
-    "**/**lock**": true,
+    "**/**-lock**": true,
     "**/**vite**": true,
     "**/dist": true,
     "**/eslint**": true,
-    "**/node_modules": true,
-    "**/public": true
+    "**/node_modules": true
+    // "**/public": true
   },
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {

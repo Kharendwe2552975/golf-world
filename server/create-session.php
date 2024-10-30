@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 $host = "127.0.0.1";
 $db = "d2556833";
 $user = "s2556833";
-$pass = "sd2556833";
+$pass = "s2556833";
 
 // Create a new MySQLi connection
 $conn = mysqli_connect($host, $user, $pass, $db);
