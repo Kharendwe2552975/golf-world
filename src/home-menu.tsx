@@ -1,4 +1,3 @@
-// src/components/GameMenu.tsx
 import '@/styles.css';
 import { Box, Button, Typography } from '@mui/material';
 import React, { useState } from 'react';
@@ -25,8 +24,12 @@ const GameMenu: React.FC = () => {
       });
   };
 
+  const handleOpenLevels = () => {
+    navigate('/levels');
+  };
+
   const handleSettings = () => {
-    console.log('Settings Opened');
+    navigate('/settings');
   };
 
   const handleExit = () => {
@@ -71,6 +74,14 @@ const GameMenu: React.FC = () => {
             sx={{ marginBottom: 2, width: 200 }}
           >
             SinglePlayer
+          </Button>
+          <Button
+            variant="contained"
+            color="success" // New Levels button color
+            onClick={handleOpenLevels}
+            sx={{ marginBottom: 2, width: 200 }}
+          >
+            Levels
           </Button>
           <Button
             variant="contained"
