@@ -5,6 +5,7 @@ import winSound from './assets/win.mp3';
 type GameContextType = {
   currentLevel: number;
   setCurrentLevel: (level: number) => void;
+  levelUp: () => void;
   levelCompleted: boolean;
   setLevelCompleted: (completed: boolean) => void;
 };
@@ -17,6 +18,11 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
 
   const winAudio = new Audio(winSound);
   const startAudio = new Audio(startSound);
+
+  const levelUp = () => {
+    setCurrentLevel((prev) => prev + 1);
+    setLevelCompleted(false);
+  };
 
   useEffect(() => {
     winAudio.load();
@@ -37,7 +43,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <GameContext.Provider
-      value={{ currentLevel, setCurrentLevel, levelCompleted, setLevelCompleted }}
+      value={{ currentLevel, setCurrentLevel, levelCompleted, setLevelCompleted, levelUp }}
     >
       {children}
     </GameContext.Provider>

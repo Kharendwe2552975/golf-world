@@ -1,3 +1,4 @@
+import { useGame } from '@/game-context';
 import { Button } from '@mui/material';
 import { useBall } from './ball/ball-provider';
 
@@ -16,6 +17,7 @@ const getClassification = (hits: number, par: number) => {
 
 const WinMessage = () => {
   const { hits } = useBall();
+  const { levelUp } = useGame();
   const par = 3;
   const classification = getClassification(hits, par);
 
@@ -72,7 +74,7 @@ const WinMessage = () => {
           borderRadius: '10px',
           cursor: 'pointer',
         }}
-        onClick={() => window.location.reload()}
+        onClick={() => levelUp()}
       >
         Next Hole
       </Button>

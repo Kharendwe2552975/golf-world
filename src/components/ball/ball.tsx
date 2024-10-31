@@ -31,6 +31,7 @@ const Ball = ({ holePosition }: { holePosition: [number, number, number] }) => {
   const [ref, api] = useSphere(() => ({
     mass: 0.045,
     position: [0, 10, 80],
+    velocity: [0, 0, 0],
     args: [2],
     material: {
       friction: 0.1,

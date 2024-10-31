@@ -6,10 +6,10 @@ import Rail from './rail';
 interface GrassGroundProps {
   holeCoords?: { x: number; z: number };
   position?: [number, number, number];
-  rotation?: [number, number, number];
   numTilesX?: number;
   numTilesZ?: number;
   rails?: [boolean, boolean, boolean, boolean]; // [top, right, bottom, left]
+  extendRailNum?: number;
 }
 
 // Main ground layout
@@ -19,6 +19,7 @@ const GrassGround: React.FC<GrassGroundProps> = ({
   numTilesX = 10,
   numTilesZ = 20,
   rails = [false, false, false, false],
+  extendRailNum = 2,
 }) => {
   const tiles = [];
 
@@ -53,7 +54,7 @@ const GrassGround: React.FC<GrassGroundProps> = ({
             position[2] + numTilesZ * 10,
           ]}
           rotation={[0, Math.PI / 2, 0]}
-          size={[10, 10, numTilesX * 12]}
+          size={[10, 10, numTilesX * (10 + extendRailNum)]}
         />
       )}
       {rails[1] && (
@@ -71,7 +72,7 @@ const GrassGround: React.FC<GrassGroundProps> = ({
         <Rail
           position={[position[0] + (numTilesX * 10) / 2 - 5, position[1], position[2] - 10]}
           rotation={[0, Math.PI / 2, 0]}
-          size={[10, 10, numTilesX * 12]}
+          size={[10, 10, numTilesX * (10 + extendRailNum)]}
         />
       )}
       {rails[3] && (

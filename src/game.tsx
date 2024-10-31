@@ -7,16 +7,21 @@ import Leaderboard from './components/multiplayer/leaderboard';
 import WinMessage from './components/win-message';
 import { useGame } from './game-context';
 import LevelOne from './levels/level-one';
-import LevelThree from './levels/three/level-three';
+import LevelTwo from './levels/level-two';
+import LevelThree from './levels/three';
 import Sky from './models/sky';
 
 const GetLevel = () => {
   const { currentLevel } = useGame();
   switch (currentLevel) {
-    case 12:
+    case 1:
       return <LevelOne />;
-    default:
+    case 2:
+      return <LevelTwo />;
+    case 3:
       return <LevelThree />;
+    default:
+      return <LevelOne />;
   }
 };
 
