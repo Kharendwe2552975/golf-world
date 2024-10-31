@@ -1,8 +1,11 @@
 import { Physics } from '@react-three/cannon';
 import { OrbitControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
+import { useEffect } from 'react';
+import { useBall } from './components/ball/ball-provider';
 import EnergySelector from './components/ball/energy-selector';
-import Leaderboard from './components/multiplayer/leaderboard';
+import FailMessage from './components/fail-message';
+import useMultiplayerGameState from './components/multiplayer/use-multiplayer-state';
 import WinMessage from './components/win-message';
 import { useGame } from './game-context';
 import LevelOne from './levels/one';
@@ -19,14 +22,21 @@ const GetLevel = () => {
 };
 
 const Game = () => {
-  const { levelCompleted } = useGame();
+  const { levelCompleted, maxHits, setHasFailed } = useGame();
+  const { state } = useBall();
+  const { localHits: myHits } = useMultiplayerGameState();
 
+  const hasFailed = myHits === maxHits && maxHits > 0 && state !== 'rolling';
+
+  useEffect(() => {
+    setHasFailed(hasFailed);
+  }, [hasFailed, setHasFailed]);
   return (
     <>
       <Canvas
         camera={{ position: [0, 80, 80], fov: 60 }}
         shadows
-        style={{ height: '100vh', width: '100vw' }}
+        style={{ height: '90vh', width: '100vw' }}
       >
         <OrbitControls enablePan={true} enableZoom={true} enableRotate={true} />
         <Sky />
@@ -37,9 +47,10 @@ const Game = () => {
           <GetLevel />
         </Physics>
       </Canvas>
+      {/* <Leaderboard/> */}
       <EnergySelector />
-      <Leaderboard />
       {levelCompleted && <WinMessage />}
+      {hasFailed && <FailMessage />}
     </>
   );
 };

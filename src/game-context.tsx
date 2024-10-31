@@ -7,6 +7,12 @@ type GameContextType = {
   setCurrentLevel: (level: number) => void;
   levelCompleted: boolean;
   setLevelCompleted: (completed: boolean) => void;
+  maxHits: number;
+  setMaxHits: (hits: number) => void;
+  hasFailed: boolean;
+  setHasFailed: (failed: boolean) => void;
+  musicOn: boolean;
+  toggleMusic: () => void;
 };
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -14,6 +20,11 @@ const GameContext = createContext<GameContextType | undefined>(undefined);
 export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   const [currentLevel, setCurrentLevel] = useState(1);
   const [levelCompleted, setLevelCompleted] = useState(false);
+  const [maxHits, setMaxHits] = useState(0);
+  const [hasFailed, setHasFailed] = useState(false);
+
+  const initialMusicState = localStorage.getItem('musicOn') === 'false' ? false : true;
+  const [musicOn, setMusicOn] = useState(initialMusicState);
 
   const winAudio = new Audio(winSound);
   const startAudio = new Audio(startSound);
@@ -23,21 +34,38 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     startAudio.load();
   }, []);
 
-  // Play start sound when the level changes
   useEffect(() => {
-    startAudio.play();
-  }, [currentLevel]);
+    if (musicOn) startAudio.play();
+  }, [currentLevel, musicOn]);
 
-  // Play win sound when the level is completed
   useEffect(() => {
-    if (levelCompleted) {
+    if (levelCompleted && musicOn) {
       winAudio.play();
     }
-  }, [levelCompleted]);
+  }, [levelCompleted, musicOn]);
+
+  const toggleMusic = () => {
+    setMusicOn((prev) => {
+      const newState = !prev;
+      localStorage.setItem('musicOn', JSON.stringify(newState));
+      return newState;
+    });
+  };
 
   return (
     <GameContext.Provider
-      value={{ currentLevel, setCurrentLevel, levelCompleted, setLevelCompleted }}
+      value={{
+        currentLevel,
+        setCurrentLevel,
+        levelCompleted,
+        setLevelCompleted,
+        maxHits,
+        setMaxHits,
+        hasFailed,
+        setHasFailed,
+        musicOn,
+        toggleMusic,
+      }}
     >
       {children}
     </GameContext.Provider>
