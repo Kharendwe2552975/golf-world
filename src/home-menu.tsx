@@ -1,34 +1,29 @@
-// src/components/GameMenu.tsx
-import meunBg from '@/assets/menu-bg.jpeg';
+import menuBg from '@/assets/menu-bg.jpeg';
+// import startSound from '@/assets/start.mp3';
 import '@/styles.css';
 import { Box, Button, Typography } from '@mui/material';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import startSound from '../src/assets/start.mp3';
 import MultiplayerModal from './components/multiplayer/multiplayer-modal';
-import TextureSelectionModal from './components/texture-selection-modal';
 
 const GameMenu: React.FC = () => {
   const navigate = useNavigate();
-  const startAudio = new Audio(startSound);
+  // const startAudio = new Audio(startSound);
 
   const handleStartGame = () => {
-    navigate('/play');
+    navigate('/levels');
     localStorage.removeItem('sessionCode');
     localStorage.setItem('hits', '0');
-    startAudio
-      .play()
-      .then(() => {
-        navigate('/play');
-      })
-      .catch((error) => {
-        console.error('Failed to play start sound:', error);
-        navigate('/play');
-      });
+    // startAudio
+    //   .play()
+    //   .catch((error) => {
+    //     console.error('Failed to play start sound:', error);
+    //     navigate('/play');
+    //   });
   };
 
   const handleSettings = () => {
-    console.log('Settings Opened');
+    navigate('/settings');
   };
 
   const handleExit = () => {
@@ -39,10 +34,6 @@ const GameMenu: React.FC = () => {
   const handleOpenMultiplayerModal = () => setOpenMultiplayer(true);
   const handleCloseMultiplayerModal = () => setOpenMultiplayer(false);
 
-  const [openTexture, setOpenTexture] = useState(false);
-  const handleOpenTextureModal = () => setOpenTexture(true);
-  const handleCloseTextureModal = () => setOpenTexture(false);
-
   return (
     <>
       <Box
@@ -52,7 +43,7 @@ const GameMenu: React.FC = () => {
         justifyContent="center"
         height="100vh"
         color="white"
-        sx={{ backgroundImage: `url(${meunBg})`, backgroundSize: 'cover' }}
+        sx={{ backgroundImage: `url(${menuBg})`, backgroundSize: 'cover' }}
       >
         <Box
           display="flex"
@@ -89,14 +80,6 @@ const GameMenu: React.FC = () => {
           <Button
             variant="contained"
             color="secondary"
-            onClick={handleOpenTextureModal}
-            sx={{ marginBottom: 2, width: 200 }}
-          >
-            Select Ball Texture
-          </Button>
-          <Button
-            variant="contained"
-            color="secondary"
             onClick={handleSettings}
             sx={{ marginBottom: 2, width: 200 }}
           >
@@ -109,8 +92,6 @@ const GameMenu: React.FC = () => {
       </Box>
       {/* Multiplayer Modal */}
       <MultiplayerModal open={openMultiplayer} onClose={handleCloseMultiplayerModal} />
-      {/* Texture Selection Modal */}
-      <TextureSelectionModal open={openTexture} onClose={handleCloseTextureModal} />
     </>
   );
 };

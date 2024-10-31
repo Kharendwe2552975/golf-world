@@ -116,8 +116,10 @@ const Ball = ({ holePosition }: { holePosition: [number, number, number] }) => {
 
   return (
     <>
+      {/* @ts-ignore */}
       <mesh ref={ref} castShadow receiveShadow>
         <sphereGeometry args={[2, 32, 32]} />
+        {/* @ts-ignore */}
         <customMaterial attach="material" uTexture={getTexture(texture)} />
       </mesh>
 
