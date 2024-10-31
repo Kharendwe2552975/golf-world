@@ -5,7 +5,7 @@ import { PerspectiveCamera, WebGLRenderer } from 'three';
 const MiniCamera = () => {
   const { scene, gl, size } = useThree();
   const miniCameraRef = useRef<PerspectiveCamera>(null);
-  const miniRendererRef = useRef<WebGLRenderer | null>(null);
+  const miniRendererRef = useRef<WebGLRenderer>(null);
 
   useEffect(() => {
     if (!miniRendererRef.current) {
@@ -13,7 +13,7 @@ const MiniCamera = () => {
       miniRendererRef.current.setSize(200, 200);
       miniRendererRef.current.domElement.style.position = 'absolute';
       miniRendererRef.current.domElement.style.top = '10px';
-      miniRendererRef.current.domElement.style.right = '10px';
+      miniRendererRef.current.domElement.style.right = '1150px';
       document.body.appendChild(miniRendererRef.current.domElement);
     }
   }, []);

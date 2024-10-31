@@ -1,6 +1,6 @@
 import React, { createContext, useCallback, useContext, useRef, useState } from 'react';
 
-// Define the context type, including hits, state, applyForce, setShootingAngle, lastStationaryPosition, and getPosition
+// Define the context type, including hits, state, applyForce, setShootingAngle, lastStationaryPosition, getPosition, texture, and setTexture
 type BallContextType = {
   hits: number;
   lastStationaryPosition: [number, number, number];
@@ -11,6 +11,8 @@ type BallContextType = {
   applyApi: (api: any) => void;
   setLastStationaryPosition: (pos: [number, number, number]) => void;
   getPosition: () => [number, number, number]; // Function to get the current position
+  texture: string;
+  setTexture: (texture: string) => void;
 };
 
 // Create the context
@@ -23,6 +25,7 @@ export const BallProvider = ({ children }: { children: React.ReactNode }) => {
   ]);
   const [shootingAngle, setShootingAngleState] = useState(0);
   const [state, setState] = useState<'aiming' | 'shooting' | 'rolling'>('aiming');
+  const [texture, setTexture] = useState('/whiteBall.png'); // Default texture
   const apiRef = useRef<any>(null);
 
   const setShootingAngle = useCallback(
@@ -74,6 +77,8 @@ export const BallProvider = ({ children }: { children: React.ReactNode }) => {
         applyApi,
         setLastStationaryPosition,
         getPosition,
+        texture,
+        setTexture,
       }}
     >
       {children}
