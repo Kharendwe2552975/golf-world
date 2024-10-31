@@ -22,17 +22,25 @@ const CustomMaterial = shaderMaterial(
 extend({ CustomMaterial });
 
 // Grass block component with rotation
-function GrassBlock({ position }: { position: [number, number, number] }) {
-  // Ref for physics box
-  const [ref] = useBox(() => ({
-    args: [10, 0.1, 10],
-    position,
-    type: 'Static',
-    contactHardness: 0.5,
-  })) as [React.MutableRefObject<THREE.Mesh>, any];
+function GrassBlock({
+  position,
+  enablePhysics = false,
+}: {
+  position: [number, number, number];
+  enablePhysics?: boolean;
+}) {
+  // Add physics to the grass block
+  if (enablePhysics) {
+    useBox(() => ({
+      args: [10, 0.1, 10],
+      position,
+      type: 'Static',
+      contactHardness: 0.5,
+    }));
+  }
 
   return (
-    <mesh ref={ref} position={position} receiveShadow castShadow>
+    <mesh position={position} receiveShadow castShadow>
       <boxGeometry args={[10, 0.1, 10]} />
       {/* @ts-ignore */}
       <customMaterial attach="material" uTexture={grassTexture} />

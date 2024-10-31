@@ -47,7 +47,7 @@ const Ball = ({ holePosition }: { holePosition: [number, number, number] }) => {
     airResistance: 0.01,
   }));
 
-  const { setLevelCompleted } = useGame();
+  const { levelCompleted, setLevelCompleted } = useGame();
   const { state, setState, lastStationaryPosition, setLastStationaryPosition, applyApi, texture } =
     useBall();
 
@@ -123,8 +123,8 @@ const Ball = ({ holePosition }: { holePosition: [number, number, number] }) => {
         <customMaterial attach="material" uTexture={getTexture(texture)} />
       </mesh>
 
-      {state !== 'rolling' && <AimingArrow position={position} />}
-      <CameraController ballPosition={position} />
+      {state !== 'rolling' && !levelCompleted && <AimingArrow position={position} />}
+      {!levelCompleted && <CameraController ballPosition={position} />}
     </>
   );
 };

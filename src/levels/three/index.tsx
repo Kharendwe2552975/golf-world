@@ -55,7 +55,7 @@ const LevelThree = () => {
         }}
       />
 
-      {!levelCompleted && <Ball holePosition={holePosition} />}
+      <Ball holePosition={holePosition} />
       <MiniCamera />
     </group>
   );

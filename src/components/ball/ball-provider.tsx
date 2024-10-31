@@ -64,7 +64,6 @@ export const BallProvider = ({ children }: { children: React.ReactNode }) => {
     }
     return [0, 0, 0];
   }, []);
-
   return (
     <BallContext.Provider
       value={{

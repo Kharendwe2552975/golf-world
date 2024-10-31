@@ -1,3 +1,4 @@
+import { useBox } from '@react-three/cannon';
 import React from 'react';
 import GrassBlock from './grass-block';
 import HoleBlock from './hole-block';
@@ -12,7 +13,6 @@ interface GrassGroundProps {
   extendRailNum?: number;
 }
 
-// Main ground layout
 const GrassGround: React.FC<GrassGroundProps> = ({
   holeCoords,
   position = [-50, 0, -100],
@@ -29,23 +29,61 @@ const GrassGround: React.FC<GrassGroundProps> = ({
       const worldY = position[1];
       const worldZ = position[2] + z * 10;
 
-      // Check if this tile should have the hole
       const hasHole = x === holeCoords?.x && z === holeCoords?.z;
+      const enablePhysics = holeCoords?.z === z;
 
       tiles.push(
         hasHole ? (
           <HoleBlock key={`hole-${x}-${worldY}-${z}`} position={[worldX, worldY, worldZ]} />
         ) : (
-          <GrassBlock key={`grass-${x}-${worldY}-${z}`} position={[worldX, worldY, worldZ]} />
+          <GrassBlock
+            key={`grass-${x}-${worldY}-${z}`}
+            position={[worldX, worldY, worldZ]}
+            enablePhysics={enablePhysics}
+          />
         ),
       );
     }
   }
 
+  // Calculate boxes based on holeCoords
+  const boxWidth = numTilesX * 10;
+  const boxHeight = 0.1;
+
+  const aboveBoxZ = holeCoords
+    ? position[2] + (holeCoords.z * 10) / 2 - 5
+    : position[2] + (numTilesZ * 10) / 2 - 5;
+
+  const belowBoxZ = position[2] + (numTilesZ * 10) / 2 + 10;
+
+  const aboveBoxSize: [number, number, number] = [
+    boxWidth,
+    boxHeight,
+    holeCoords ? holeCoords.z * 10 : numTilesZ * 10,
+  ];
+  const belowBoxSize: [number, number, number] = [
+    boxWidth,
+    boxHeight,
+    holeCoords ? (numTilesZ - holeCoords.z - 1) * 10 : 0,
+  ];
+
+  // Create physics boxes
+  useBox(() => ({
+    args: aboveBoxSize,
+    position: [position[0] + boxWidth / 2 - 5, position[1], aboveBoxZ],
+    type: 'Static',
+  }));
+  if (belowBoxSize[2] !== 0) {
+    useBox(() => ({
+      args: belowBoxSize,
+      position: [position[0] + boxWidth / 2 - 5, position[1], belowBoxZ],
+      type: 'Static',
+    }));
+  }
+
   return (
     <group>
       {tiles}
-      {/* Rails around the GrassGround if specified */}
       {rails[0] && (
         <Rail
           position={[

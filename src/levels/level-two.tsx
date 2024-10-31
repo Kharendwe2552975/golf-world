@@ -35,7 +35,7 @@ const LevelTwo = () => {
       <Rail position={[45, 0, -200]} rotation={[0, Math.PI / 2, 0]} size={[10, 10, 200]} />
       <Rail position={[155, 0, -100]} rotation={[0, Math.PI / 2, 0]} size={[10, 10, 200]} />
       <FlagWithPole position={holePosition} />
-      {!levelCompleted && <Ball holePosition={holePosition} />}
+      <Ball holePosition={holePosition} />
       <MiniCamera />
     </group>
   );

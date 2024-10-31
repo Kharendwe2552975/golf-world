@@ -11,7 +11,7 @@ const LevelOne = () => {
   return (
     <group>
       <GrassGround holeCoords={holeCoords} rails={[true, true, true, true]} />
-      {!levelCompleted && <Ball holePosition={holePosition} />}
+      <Ball holePosition={holePosition} />
       <FlagWithPole position={holePosition} />
       {/* <MultiplayerBalls /> */}
       <MiniCamera />

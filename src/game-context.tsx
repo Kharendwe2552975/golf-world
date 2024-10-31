@@ -50,7 +50,6 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       }
     }
   }, [levelCompleted]);
-
   return (
     <GameContext.Provider
       value={{
