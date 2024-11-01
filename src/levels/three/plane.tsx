@@ -1,4 +1,5 @@
 import { useBox } from '@react-three/cannon';
+import { grassTexture } from '../../components/textures/grassTexture'; // Adjust the import path as needed
 
 interface PlaneProps {
   position?: [number, number, number];
@@ -22,7 +23,7 @@ const Plane: React.FC<PlaneProps> = ({
     //@ts-ignore
     <mesh ref={ref}>
       <boxGeometry args={[size[0], 0.1, size[1]]} />
-      <meshStandardMaterial color="lightgreen" />
+      <meshStandardMaterial map={grassTexture} />
     </mesh>
   );
 };

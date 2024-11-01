@@ -28,6 +28,7 @@ const GetLevel = () => {
 const Game = () => {
   const { levelCompleted } = useGame();
   const navigate = useNavigate();
+
   const handleQuitGame = () => {
     navigate('/');
   };
@@ -47,6 +48,7 @@ const Game = () => {
         <Physics gravity={[0, -9.81, 0]}>
           <GetLevel />
         </Physics>
+        {/* MiniCamera renders here, only during gameplay */}
       </Canvas>
       <EnergySelector />
       {levelCompleted && <Leaderboard />}

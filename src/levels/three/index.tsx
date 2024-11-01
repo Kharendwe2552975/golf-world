@@ -15,7 +15,7 @@ const LevelThree = () => {
   const { levelCompleted } = useGame();
 
   return (
-    <group>
+    <group position={[0, 0, 20]}>
       {/* Lower GrassGround */}
       <GrassGround position={[-50, 0, -100]} rails={[true, true, false, true]} />
 
@@ -56,7 +56,7 @@ const LevelThree = () => {
       />
 
       <Ball holePosition={holePosition} />
-      <MiniCamera />
+      <MiniCamera position={[-100, 800, 400]} />
     </group>
   );
 };

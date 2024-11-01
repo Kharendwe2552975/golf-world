@@ -1,5 +1,6 @@
 import { useFrame } from '@react-three/fiber';
 import { useRef } from 'react';
+import { obstacle } from '../../components/textures/obstacleTexture'; // Adjust the import path as needed
 
 const RotatingCylinder = ({
   position = [0, 5, 0],
@@ -24,7 +25,7 @@ const RotatingCylinder = ({
       {/* @ts-ignore */}
       <mesh ref={verticalCylinderRef} position={position} castShadow>
         <cylinderGeometry args={[10, 10, 10, 32]} /> {/* Small vertical cylinder */}
-        <meshStandardMaterial color="white" />
+        <meshStandardMaterial map={obstacle} />
       </mesh>
       {/* Horizontal Cylinder (rotating around vertical cylinder) */}
       <mesh
@@ -35,7 +36,7 @@ const RotatingCylinder = ({
         castShadow
       >
         <cylinderGeometry args={[5, 5, 50, 32]} /> {/* Long thin horizontal cylinder */}
-        <meshStandardMaterial color="white" />
+        <meshStandardMaterial map={obstacle} />
       </mesh>
     </>
   );

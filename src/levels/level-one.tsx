@@ -14,7 +14,7 @@ const LevelOne = () => {
       <Ball holePosition={holePosition} />
       <FlagWithPole position={holePosition} />
       {/* <MultiplayerBalls /> */}
-      <MiniCamera />
+      <MiniCamera position={[0, 600, 0]} />
     </group>
   );
 };

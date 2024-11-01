@@ -30,11 +30,17 @@ const CustomMaterial = shaderMaterial(
 
 extend({ CustomMaterial });
 
-const Ball = ({ holePosition }: { holePosition: [number, number, number] }) => {
-  const [position, setPosition] = useState<[number, number, number]>([0, 10, 80]);
+const Ball = ({
+  holePosition,
+  initialPosition = [0, 10, 80],
+}: {
+  holePosition: [number, number, number];
+  initialPosition?: [number, number, number];
+}) => {
+  const [position, setPosition] = useState<[number, number, number]>(initialPosition);
   const [ref, api] = useSphere(() => ({
     mass: 0.045,
-    position: [0, 10, 80],
+    position: initialPosition,
     velocity: [0, 0, 0],
     args: [2],
     material: {

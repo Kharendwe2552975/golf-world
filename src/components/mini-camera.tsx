@@ -2,25 +2,35 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { useEffect, useRef } from 'react';
 import { PerspectiveCamera, WebGLRenderer } from 'three';
 
-const MiniCamera = () => {
-  const { scene, gl, size } = useThree();
+interface MiniCameraProps {
+  position: [number, number, number];
+}
+
+const MiniCamera = ({ position }: MiniCameraProps) => {
+  const { scene, size } = useThree();
   const miniCameraRef = useRef<PerspectiveCamera>(null);
-  const miniRendererRef = useRef<WebGLRenderer>(null);
+  const miniRendererRef = useRef<WebGLRenderer>(new WebGLRenderer({ antialias: true }));
 
   useEffect(() => {
-    if (!miniRendererRef.current) {
-      miniRendererRef.current = new WebGLRenderer({ antialias: true });
-      miniRendererRef.current.setSize(200, 200);
-      miniRendererRef.current.domElement.style.position = 'absolute';
-      miniRendererRef.current.domElement.style.top = '10px';
-      miniRendererRef.current.domElement.style.right = '1150px';
-      document.body.appendChild(miniRendererRef.current.domElement);
-    }
+    miniRendererRef.current.setSize(200, 200);
+    miniRendererRef.current.domElement.style.position = 'absolute';
+    miniRendererRef.current.domElement.style.top = '10px';
+    miniRendererRef.current.domElement.style.right = '1150px';
+    document.body.appendChild(miniRendererRef.current.domElement);
+
+    // Cleanup function to remove mini renderer on unmount
+    return () => {
+      if (miniRendererRef.current) {
+        document.body.removeChild(miniRendererRef.current.domElement);
+        miniRendererRef.current.dispose();
+        (miniRendererRef.current as any) = null;
+      }
+    };
   }, []);
 
   useFrame(() => {
     if (miniCameraRef.current && miniRendererRef.current) {
-      miniCameraRef.current.position.set(0, 600, 20);
+      miniCameraRef.current.position.set(...position);
       miniCameraRef.current.lookAt(scene.position);
       miniRendererRef.current.render(scene, miniCameraRef.current);
     }
