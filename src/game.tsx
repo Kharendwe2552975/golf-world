@@ -58,7 +58,7 @@ const Game = () => {
         {/* MiniCamera renders here, only during gameplay */}
       </Canvas>
       <EnergySelector />
-      {levelCompleted && <Leaderboard />}
+      {<Leaderboard />}
       {levelCompleted && <WinMessage />}
       {hasFailed && <FailMessage />}
     </>

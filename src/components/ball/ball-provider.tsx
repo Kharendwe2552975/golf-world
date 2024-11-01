@@ -1,4 +1,5 @@
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { useSocket } from '../multiplayer/socket-provider';
 
 // Define the context type, including hits, state, applyForce, setShootingAngle, lastStationaryPosition, getPosition, texture, and setTexture
 type BallContextType = {
@@ -37,6 +38,7 @@ export const BallProvider = ({ children }: { children: React.ReactNode }) => {
   }, [texture]);
 
   const apiRef = useRef<any>(null);
+  const { updatePlayerState } = useSocket();
 
   const setShootingAngle = useCallback(
     (angle: number) => {
@@ -59,6 +61,17 @@ export const BallProvider = ({ children }: { children: React.ReactNode }) => {
       }
       setState('rolling'); // Transition to rolling state
       setHits((hits) => hits + 1);
+
+      updatePlayerState({
+        hits,
+        force: strength,
+        aim_direction: shootingAngle,
+        ball_position: {
+          x: lastStationaryPosition[0],
+          y: lastStationaryPosition[1],
+          z: lastStationaryPosition[2],
+        },
+      });
     },
     [state, shootingAngle],
   );

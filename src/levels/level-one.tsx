@@ -2,6 +2,7 @@ import Ball from '@/components/ball/ball';
 import FlagWithPole from '@/components/goal-point-flag';
 import GrassGround from '@/components/grass';
 import MiniCamera from '@/components/mini-camera';
+import MultiplayerBalls from '@/components/multiplayer/multiplayer-balls';
 import { useGame } from '@/game-context';
 
 const LevelOne = () => {
@@ -15,7 +16,7 @@ const LevelOne = () => {
       <GrassGround holeCoords={holeCoords} rails={[true, true, true, true]} />
       {!hasFailed && <Ball holePosition={holePosition} />}
       <FlagWithPole position={holePosition} />
-      {/* <MultiplayerBalls /> */}
+      <MultiplayerBalls />
       <MiniCamera position={[0, 600, 0]} />
     </group>
   );
