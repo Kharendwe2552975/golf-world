@@ -12,7 +12,7 @@ const App = () => {
     <GameProvider>
       <SocketProvider>
         <BallProvider>
-          <BrowserRouter>
+          <BrowserRouter basename={import.meta.env.BASE_URL}>
             <Routes>
               <Route path="/" element={<GameMenu />} />
               <Route path="/play" element={<GameLayout />} />
