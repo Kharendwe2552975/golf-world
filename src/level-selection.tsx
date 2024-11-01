@@ -3,52 +3,51 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import { Box, Button, IconButton, Typography } from '@mui/material';
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGame } from './game-context';
 
-const initialLevels = [
-  {
-    id: 1,
-    name: 'Level One',
-    unlocked: true,
-    Points: 3,
-    image: 'https://via.placeholder.com/220x150',
-  },
-  {
-    id: 2,
-    name: 'Level Two',
-    unlocked: true,
-    Points: 4,
-    image: 'https://via.placeholder.com/220x150',
-  },
-  {
-    id: 3,
-    name: 'Level Three',
-    unlocked: true,
-    Points: 5,
-    image: 'https://via.placeholder.com/220x150',
-  },
-  {
-    id: 4,
-    name: 'Level Four',
-    unlocked: true,
-    Points: 4,
-    image: 'https://via.placeholder.com/220x150',
-  },
-  {
-    id: 5,
-    name: 'Level Five',
-    unlocked: false,
-    Points: 5,
-    image: 'https://via.placeholder.com/220x150',
-  },
-];
+// const initialLevels = [
+//   {
+//     id: 1,
+//     name: 'Level One',
+//     unlocked: true,
+//     Points: 3,
+//     image: 'https://via.placeholder.com/220x150',
+//   },
+//   {
+//     id: 2,
+//     name: 'Level Two',
+//     unlocked: true,
+//     Points: 4,
+//     image: 'https://via.placeholder.com/220x150',
+//   },
+//   {
+//     id: 3,
+//     name: 'Level Three',
+//     unlocked: true,
+//     Points: 5,
+//     image: 'https://via.placeholder.com/220x150',
+//   },
+//   {
+//     id: 4,
+//     name: 'Level Four',
+//     unlocked: true,
+//     Points: 4,
+//     image: 'https://via.placeholder.com/220x150',
+//   },
+//   {
+//     id: 5,
+//     name: 'Level Five',
+//     unlocked: false,
+//     Points: 5,
+//     image: 'https://via.placeholder.com/220x150',
+//   },
+// ];
 
 const LevelSelection: React.FC = () => {
   const navigate = useNavigate();
-  const [levels] = useState(initialLevels);
-  const { setCurrentLevel } = useGame();
+  const { setCurrentLevel, levels } = useGame();
 
   const handleLevelClick = (levelId: number, unlocked: boolean) => {
     if (unlocked) {
@@ -75,7 +74,7 @@ const LevelSelection: React.FC = () => {
       }}
     >
       <Box position="absolute" top={16} left={16}>
-        <IconButton onClick={() => navigate(-1)} color="inherit">
+        <IconButton onClick={() => navigate('/')} color="inherit">
           <ArrowBackIcon fontSize="large" />
         </IconButton>
       </Box>

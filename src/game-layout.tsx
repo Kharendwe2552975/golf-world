@@ -154,7 +154,7 @@ export default function GameLayout() {
                 fullWidth
                 variant="contained"
                 color="error"
-                onClick={() => navigate('/')}
+                onClick={() => navigate('/levels')}
                 sx={{
                   backgroundColor: '#2d2d2d',
                   color: 'red',

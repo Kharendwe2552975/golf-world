@@ -16,7 +16,56 @@ type GameContextType = {
   setPar: (par: number) => void;
   hasFailed: boolean;
   setHasFailed: (failed: boolean) => void;
+  levels: Level[];
+  setLevels: (levels: Level[]) => void;
+  restartGame: () => void;
 };
+
+interface Level {
+  id: number;
+  name: string;
+  unlocked: boolean;
+  Points: number;
+  image: string;
+}
+
+const initialLevels: Level[] = [
+  {
+    id: 1,
+    name: 'Level One',
+    unlocked: true,
+    Points: 3,
+    image: 'https://via.placeholder.com/220x150',
+  },
+  {
+    id: 2,
+    name: 'Level Two',
+    unlocked: false,
+    Points: 4,
+    image: 'https://via.placeholder.com/220x150',
+  },
+  {
+    id: 3,
+    name: 'Level Three',
+    unlocked: false,
+    Points: 5,
+    image: 'https://via.placeholder.com/220x150',
+  },
+  {
+    id: 4,
+    name: 'Level Four',
+    unlocked: false,
+    Points: 4,
+    image: 'https://via.placeholder.com/220x150',
+  },
+  {
+    id: 5,
+    name: 'Level Five',
+    unlocked: false,
+    Points: 5,
+    image: 'https://via.placeholder.com/220x150',
+  },
+];
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
 
@@ -36,6 +85,10 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   });
   const [par, setPar] = useState(0);
   const [hasFailed, setHasFailed] = useState(false);
+  const [levels, setLevels] = useState<Level[]>(() => {
+    const savedLevels = localStorage.getItem('levels');
+    return savedLevels ? JSON.parse(savedLevels) : initialLevels;
+  });
 
   const winAudio = new Audio(winSound);
   const startAudio = new Audio(startSound);
@@ -43,6 +96,24 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   const levelUp = () => {
     setCurrentLevel((prev) => prev + 1);
     setLevelCompleted(false);
+    setLevels((prevLevels) => {
+      const updatedLevels = prevLevels.map((level) => {
+        if (level.id === currentLevel + 1) {
+          return { ...level, unlocked: true };
+        }
+        return level;
+      });
+      localStorage.setItem('levels', JSON.stringify(updatedLevels));
+      return updatedLevels;
+    });
+  };
+
+  const restartGame = () => {
+    setCurrentLevel(1);
+    setLevels(initialLevels);
+    localStorage.setItem('currentLevel', '1');
+    localStorage.setItem('levels', JSON.stringify(initialLevels));
+    window.location.reload();
   };
 
   useEffect(() => {
@@ -66,7 +137,6 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [levelCompleted]);
 
-  // Store current level in local storage whenever it changes
   useEffect(() => {
     localStorage.setItem('currentLevel', currentLevel.toString());
   }, [currentLevel]);
@@ -78,6 +148,13 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     localStorage.setItem('isSoundOn', JSON.stringify(isSoundOn));
   }, [isSoundOn]);
+
+  useEffect(() => {
+    const savedLevels = localStorage.getItem('levels');
+    if (!savedLevels) {
+      localStorage.setItem('levels', JSON.stringify(initialLevels));
+    }
+  }, []);
 
   return (
     <GameContext.Provider
@@ -95,6 +172,9 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
         setPar,
         hasFailed,
         setHasFailed,
+        levels,
+        setLevels,
+        restartGame,
       }}
     >
       {children}

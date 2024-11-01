@@ -13,7 +13,9 @@ import LevelFourStartStage from './start-stage';
 const LevelFour = () => {
   const holePosition: [number, number, number] = [129, 0, 150];
   const holeCoords = { x: 5, z: 5 };
-  const { levelCompleted } = useGame();
+  const { levelCompleted, setPar } = useGame();
+
+  setPar(8);
 
   return (
     <group>

@@ -4,6 +4,7 @@ import { Canvas } from '@react-three/fiber';
 import { useEffect } from 'react';
 import { useBall } from './components/ball/ball-provider';
 import EnergySelector from './components/ball/energy-selector';
+import EndMessage from './components/end-message';
 import FailMessage from './components/fail-message';
 import Leaderboard from './components/multiplayer/leaderboard';
 import WinMessage from './components/win-message';
@@ -31,12 +32,12 @@ const GetLevel = () => {
 };
 
 const Game = () => {
-  const { levelCompleted } = useGame();
+  const { levelCompleted, currentLevel } = useGame();
   const { par, setHasFailed } = useGame();
   const { hits, state } = useBall();
 
-  const hasFailed = hits === par && par !== 0 && state !== 'rolling';
-
+  const hasFailed = hits === par && par !== 0 && state !== 'rolling' && !levelCompleted;
+  const finishedGame = currentLevel === 2 && levelCompleted;
   useEffect(() => {
     if (hasFailed) {
       setHasFailed(true);
@@ -62,8 +63,9 @@ const Game = () => {
       </Canvas>
       <EnergySelector />
       {<Leaderboard />}
-      {levelCompleted && <WinMessage />}
+      {!finishedGame && levelCompleted && <WinMessage />}
       {hasFailed && <FailMessage />}
+      {finishedGame && <EndMessage />}
     </>
   );
 };
