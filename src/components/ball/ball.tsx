@@ -1,4 +1,4 @@
-// Import audio files
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useGame } from '@/game-context';
 import { useSphere } from '@react-three/cannon';
 import { shaderMaterial } from '@react-three/drei';
@@ -26,39 +26,41 @@ const CustomMaterial = shaderMaterial(
 
 extend({ CustomMaterial });
 
-const Ball = ({ holePosition }: { holePosition: [number, number, number] }) => {
-  const [position, setPosition] = useState<[number, number, number]>([0, 10, 80]);
+const Ball: React.FC<{
+  holePosition: [number, number, number];
+  initialPosition?: [number, number, number];
+}> = ({ holePosition, initialPosition = [0, 10, 80] }) => {
+  const [position, setPosition] = useState<[number, number, number]>(initialPosition);
   const [ref, api] = useSphere(() => ({
     mass: 0.045,
-    position: [0, 10, 80],
+    position: initialPosition,
     args: [2],
     material: {
       friction: 0.1,
-      restitution: 0.1, // Bounciness
+      restitution: 0.1,
       rollingFriction: 0.05,
     },
-    linearDamping: 0.3, // To slow down rolling
-    angularDamping: 0.4, // To slow down rolling
+    linearDamping: 0.3,
+    angularDamping: 0.4,
     airResistance: 0.01,
-    // onCollide: () => {
-    //   hitAudio.play().catch((error) => {
-    //     console.error('Failed to play hit sound:', error);
-    //   });
-    // },
   }));
 
   const { setLevelCompleted } = useGame();
   const { state, setState, lastStationaryPosition, setLastStationaryPosition, applyApi } =
     useBall();
-  // Use useCallback to ensure applyApi is not re-created on every render
-  const stableApplyApi = useCallback(() => applyApi(api), [api, applyApi]);
+
+  const applyApiStable = useCallback(() => applyApi(api), [api, applyApi]);
+
   useEffect(() => {
-    stableApplyApi();
+    applyApiStable();
+
+    const tolerance = 0.1;
+    const maxYThreshold = -20;
 
     const unsubscribePosition = api.position.subscribe((pos) => {
-      const tolerance = 0.1; // Higher error tolerance better performance
-
       const newPos: [number, number, number] = [pos[0], pos[1], pos[2]];
+
+      // Update position if change exceeds tolerance
       if (
         Math.abs(newPos[0] - position[0]) > tolerance ||
         Math.abs(newPos[1] - position[1]) > tolerance ||
@@ -67,6 +69,7 @@ const Ball = ({ holePosition }: { holePosition: [number, number, number] }) => {
         setPosition(newPos);
       }
 
+      // Check if the ball is within the hole area
       if (pos[1] < 0) {
         const distanceToHole = Math.sqrt(
           (pos[0] - holePosition[0]) ** 2 + (pos[2] - holePosition[2]) ** 2,
@@ -76,7 +79,8 @@ const Ball = ({ holePosition }: { holePosition: [number, number, number] }) => {
         }
       }
 
-      if (pos[1] < -20) {
+      // Reset ball if it falls too low
+      if (pos[1] < maxYThreshold) {
         api.velocity.set(0, 0, 0);
         api.position.set(...lastStationaryPosition);
         api.velocity.set(0, 0, 0);
@@ -96,7 +100,7 @@ const Ball = ({ holePosition }: { holePosition: [number, number, number] }) => {
       unsubscribePosition();
       unsubscribeVelocity();
     };
-  }, [stableApplyApi, state, position, lastStationaryPosition, holePosition]); // Avoid passing large objects as dependencies
+  }, [applyApiStable, state, holePosition, lastStationaryPosition]); // Position is managed by state itself here
 
   return (
     <>

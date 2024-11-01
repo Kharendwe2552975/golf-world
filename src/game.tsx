@@ -6,15 +6,15 @@ import EnergySelector from './components/ball/energy-selector';
 import Leaderboard from './components/multiplayer/leaderboard';
 import WinMessage from './components/win-message';
 import { useGame } from './game-context';
-import LevelOne from './levels/level-one';
+import LevelFour from './levels/four/level-four';
 import LevelThree from './levels/three/level-three';
 import Sky from './models/sky';
 
 const GetLevel = () => {
   const { currentLevel } = useGame();
   switch (currentLevel) {
-    case 12:
-      return <LevelOne />;
+    case 1:
+      return <LevelFour />;
     default:
       return <LevelThree />;
   }
@@ -39,7 +39,7 @@ const Game = () => {
         <ambientLight intensity={0.4} />
         <spotLight position={[30, 60, 30]} angle={0.5} penumbra={0.5} intensity={1} castShadow />
         <pointLight position={[-20, 40, -20]} intensity={0.3} />
-        <Physics gravity={[0, -9.81, 0]}>
+        <Physics gravity={[0, -20, 0]}>
           <GetLevel />
         </Physics>
       </Canvas>
