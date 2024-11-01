@@ -78,7 +78,7 @@ const Ball = ({
         const distanceToHole = Math.sqrt(
           (pos[0] - holePosition[0]) ** 2 + (pos[2] - holePosition[2]) ** 2,
         );
-        if (distanceToHole < 4) {
+        if (distanceToHole < 10) {
           setLevelCompleted(true);
         }
       }

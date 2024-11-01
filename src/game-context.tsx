@@ -13,7 +13,6 @@ type GameContextType = {
   levelCompleted: boolean;
   setLevelCompleted: (completed: boolean) => void;
   par: number;
-  setPar: (par: number) => void;
   hasFailed: boolean;
   setHasFailed: (failed: boolean) => void;
   levels: Level[];
@@ -25,7 +24,7 @@ interface Level {
   id: number;
   name: string;
   unlocked: boolean;
-  Points: number;
+  par: number;
   image: string;
 }
 
@@ -34,28 +33,28 @@ const initialLevels: Level[] = [
     id: 1,
     name: 'Level One',
     unlocked: true,
-    Points: 3,
+    par: 2,
     image: 'https://via.placeholder.com/220x150',
   },
   {
     id: 2,
     name: 'Level Two',
     unlocked: false,
-    Points: 4,
+    par: 4,
     image: 'https://via.placeholder.com/220x150',
   },
   {
     id: 3,
     name: 'Level Three',
     unlocked: false,
-    Points: 5,
+    par: 4,
     image: 'https://via.placeholder.com/220x150',
   },
   {
     id: 4,
     name: 'Level Four',
     unlocked: false,
-    Points: 4,
+    par: 8,
     image: 'https://via.placeholder.com/220x150',
   },
 ];
@@ -76,18 +75,19 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     const savedSoundState = localStorage.getItem('isSoundOn');
     return savedSoundState ? JSON.parse(savedSoundState) : true;
   });
-  const [par, setPar] = useState(0);
   const [hasFailed, setHasFailed] = useState(false);
   const [levels, setLevels] = useState<Level[]>(() => {
     const savedLevels = localStorage.getItem('levels');
     return savedLevels ? JSON.parse(savedLevels) : initialLevels;
   });
 
+  const [par, setPar] = useState(() => levels[currentLevel - 1].par);
   const winAudio = new Audio(winSound);
   const startAudio = new Audio(startSound);
 
   const levelUp = () => {
     setCurrentLevel((prev) => prev + 1);
+    setPar(levels[currentLevel].par);
     setLevelCompleted(false);
     setLevels((prevLevels) => {
       const updatedLevels = prevLevels.map((level) => {
@@ -162,7 +162,6 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
         isSoundOn,
         toggleSound: () => setIsSoundOn((prev) => !prev),
         par,
-        setPar,
         hasFailed,
         setHasFailed,
         levels,

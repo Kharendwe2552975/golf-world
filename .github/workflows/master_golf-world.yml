@@ -23,12 +23,11 @@ jobs:
 
       - name: npm install, build, and test
         run: |
+          cd server
           npm install
-          npm run build --if-present
-          npm run test --if-present
 
       - name: Zip artifact for deployment
-        run: zip release.zip ./* -r
+        run: zip release.zip ./server/* -r
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -53,7 +52,7 @@ jobs:
 
       - name: Unzip artifact for deployment
         run: unzip release.zip
-      
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -67,5 +66,4 @@ jobs:
         with:
           app-name: 'golf-world'
           slot-name: 'Production'
-          package: .
-          
+          package: server

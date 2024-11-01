@@ -7,44 +7,6 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGame } from './game-context';
 
-// const initialLevels = [
-//   {
-//     id: 1,
-//     name: 'Level One',
-//     unlocked: true,
-//     Points: 3,
-//     image: 'https://via.placeholder.com/220x150',
-//   },
-//   {
-//     id: 2,
-//     name: 'Level Two',
-//     unlocked: true,
-//     Points: 4,
-//     image: 'https://via.placeholder.com/220x150',
-//   },
-//   {
-//     id: 3,
-//     name: 'Level Three',
-//     unlocked: true,
-//     Points: 5,
-//     image: 'https://via.placeholder.com/220x150',
-//   },
-//   {
-//     id: 4,
-//     name: 'Level Four',
-//     unlocked: true,
-//     Points: 4,
-//     image: 'https://via.placeholder.com/220x150',
-//   },
-//   {
-//     id: 5,
-//     name: 'Level Five',
-//     unlocked: false,
-//     Points: 5,
-//     image: 'https://via.placeholder.com/220x150',
-//   },
-// ];
-
 const LevelSelection: React.FC = () => {
   const navigate = useNavigate();
   const { setCurrentLevel, levels } = useGame();
@@ -197,7 +159,7 @@ const LevelSelection: React.FC = () => {
                   fontSize: '1.1rem',
                 }}
               >
-                Points: {level.Points}
+                Par: {level.par}
               </Typography>
               <Button
                 variant="contained"

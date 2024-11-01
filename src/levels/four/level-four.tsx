@@ -4,7 +4,6 @@ import FlagWithPole from '@/components/goal-point-flag';
 import GrassGround from '@/components/grass';
 import MiniCamera from '@/components/mini-camera';
 import { Ocean } from '@/components/ocean';
-import { useGame } from '@/game-context';
 import { FrontSide, Vector3 } from 'three';
 import LevelFourIncline from './incline-plane';
 import LevelFourRockyStage from './rocky-stage';
@@ -13,9 +12,6 @@ import LevelFourStartStage from './start-stage';
 const LevelFour = () => {
   const holePosition: [number, number, number] = [129, 0, 150];
   const holeCoords = { x: 5, z: 5 };
-  const { levelCompleted, setPar } = useGame();
-
-  setPar(8);
 
   return (
     <group>
@@ -60,7 +56,7 @@ const LevelFour = () => {
         }}
       />
 
-      {!levelCompleted && <Ball holePosition={holePosition} initialPosition={[-150, 70, 50]} />}
+      <Ball holePosition={holePosition} initialPosition={[-150, 70, 50]} />
       <MiniCamera position={[0, 600, 0]} />
     </group>
   );

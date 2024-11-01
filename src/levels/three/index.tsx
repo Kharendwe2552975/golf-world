@@ -4,7 +4,6 @@ import FlagWithPole from '@/components/goal-point-flag';
 import GrassGround from '@/components/grass';
 import MiniCamera from '@/components/mini-camera';
 import { Ocean } from '@/components/ocean';
-import { useGame } from '@/game-context';
 import Plane from '@/levels/three/plane';
 import { FrontSide, Vector3 } from 'three';
 import RotatingCylinder from './rotating-cylinder';
@@ -12,9 +11,7 @@ import RotatingCylinder from './rotating-cylinder';
 const LevelThree = () => {
   const holePosition: [number, number, number] = [0, 25, -355];
   const holeCoords = { x: 5, z: 2 };
-  const { setPar, hasFailed } = useGame();
 
-  setPar(4);
   return (
     <group position={[0, 0, 20]}>
       {/* Lower GrassGround */}
@@ -56,7 +53,7 @@ const LevelThree = () => {
         }}
       />
 
-      {!hasFailed && <Ball holePosition={holePosition} />}
+      <Ball holePosition={holePosition} />
       <MiniCamera position={[-100, 800, 400]} />
     </group>
   );

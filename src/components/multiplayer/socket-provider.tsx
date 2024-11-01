@@ -1,3 +1,4 @@
+import { useGame } from '@/game-context';
 import React, {
   createContext,
   ReactNode,
@@ -61,6 +62,9 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   const [players, setPlayers] = useState<{ [key: string]: PlayerData }>({});
   const [currentPlayer, setCurrentPlayer] = useState<string | null>(null);
   const [gameStarted, setGameStarted] = useState<boolean>(false);
+
+  const { setCurrentLevel, setLevelCompleted, levelCompleted } = useGame();
+
   useEffect(() => {
     // Initialize the socket connection
     socket.current = io(import.meta.env.VITE_SERVER_URL);
@@ -91,10 +95,25 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       });
     });
 
+    socket.current.on('nextLevel', ({ level }: { level: any }) => {
+      setLevelCompleted(false);
+      setCurrentLevel(parseInt(level, 10));
+    });
+
     socket.current.on('gameStarted', () => {
+      setCurrentLevel(1);
       setGameStarted(true);
     });
   }, []);
+
+  // Handle level completion
+  useEffect(() => {
+    if (levelCompleted) {
+      if (sessionCode && socket.current) {
+        socket.current.emit('levelCompleted', sessionCode);
+      }
+    }
+  }, [levelCompleted]);
 
   // Create a session
   const createSession = useCallback((playerName: string): Promise<string> => {
