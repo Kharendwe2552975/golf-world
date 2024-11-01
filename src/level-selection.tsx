@@ -32,7 +32,7 @@ const initialLevels = [
   {
     id: 4,
     name: 'Level Four',
-    unlocked: false,
+    unlocked: true,
     Points: 4,
     image: 'https://via.placeholder.com/220x150',
   },

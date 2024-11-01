@@ -8,6 +8,7 @@ import FailMessage from './components/fail-message';
 import Leaderboard from './components/multiplayer/leaderboard';
 import WinMessage from './components/win-message';
 import { useGame } from './game-context';
+import LevelFour from './levels/four/level-four';
 import LevelOne from './levels/level-one';
 import LevelTwo from './levels/level-two';
 import LevelThree from './levels/three';
@@ -22,6 +23,8 @@ const GetLevel = () => {
       return <LevelTwo />;
     case 3:
       return <LevelThree />;
+    case 4:
+      return <LevelFour />;
     default:
       return <LevelOne />;
   }
@@ -52,7 +55,7 @@ const Game = () => {
         <ambientLight intensity={0.4} />
         <spotLight position={[30, 60, 30]} angle={0.5} penumbra={0.5} intensity={1} castShadow />
         <pointLight position={[-20, 40, -20]} intensity={0.3} />
-        <Physics gravity={[0, -9.81, 0]}>
+        <Physics gravity={[0, -20, 0]}>
           <GetLevel />
         </Physics>
         {/* MiniCamera renders here, only during gameplay */}
