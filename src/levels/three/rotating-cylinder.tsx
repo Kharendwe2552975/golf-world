@@ -1,44 +1,51 @@
-import { useFrame } from '@react-three/fiber';
+import { useCylinder } from '@react-three/cannon';
+import { useFrame, useLoader } from '@react-three/fiber';
 import { useRef } from 'react';
-import { obstacle } from '../../components/textures/obstacleTexture'; // Adjust the import path as needed
+import * as THREE from 'three';
+import { TextureLoader } from 'three';
 
 const RotatingCylinder = ({
-  position = [0, 5, 0],
-  speed = 0.1,
+  position = [0, 5, 0], // Initial position
+  speed = 0.002,
 }: {
   position: [number, number, number];
   speed: number;
 }) => {
-  const verticalCylinderRef = useRef();
-  const horizontalCylinderRef = useRef();
-  // Rotate the horizontal cylinder around the vertical cylinder
+  const [cylinderRef, cylinderApi] = useCylinder(() => ({
+    mass: 1,
+    position: [position[0], position[1] + 1, position[2]], // Add a small offset in the y-axis
+    args: [5, 5, 50, 32],
+    rotation: [Math.PI / 2, 0, 0],
+    fixedRotation: true,
+  }));
+
+  const angleRef = useRef(0);
+
+  const texture = useLoader(
+    TextureLoader,
+    'https://threejsfundamentals.org/threejs/resources/images/wall.jpg',
+  );
+  texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.set(2, 2);
+
   useFrame(() => {
-    if (horizontalCylinderRef.current) {
-      // @ts-ignore
-      horizontalCylinderRef.current.rotation.y += speed; // Adjust rotation speed if needed
-    }
+    angleRef.current += speed;
+
+    const radius = 5;
+    const x = position[0] + radius * Math.cos(angleRef.current);
+    const z = position[2] + radius * Math.sin(angleRef.current);
+
+    // Keep the cylinder a little above the ground
+    cylinderApi.position.set(x, position[1] + 1, z); // Maintain the y-offset
+    cylinderApi.rotation.set(Math.PI / 2, 0, angleRef.current); // Rotate around z-axis
   });
 
   return (
-    <>
-      {/* Vertical Cylinder */}
-      {/* @ts-ignore */}
-      <mesh ref={verticalCylinderRef} position={position} castShadow>
-        <cylinderGeometry args={[10, 10, 10, 32]} /> {/* Small vertical cylinder */}
-        <meshStandardMaterial map={obstacle} />
-      </mesh>
-      {/* Horizontal Cylinder (rotating around vertical cylinder) */}
-      <mesh
-        //@ts-ignore
-        ref={horizontalCylinderRef}
-        position={position}
-        rotation={[0, 0, Math.PI / 2]}
-        castShadow
-      >
-        <cylinderGeometry args={[5, 5, 50, 32]} /> {/* Long thin horizontal cylinder */}
-        <meshStandardMaterial map={obstacle} />
-      </mesh>
-    </>
+    /*@ts-ignore*/
+    <mesh ref={cylinderRef} castShadow receiveShadow>
+      <cylinderGeometry args={[5, 5, 50, 64]} />
+      <meshStandardMaterial map={texture} metalness={0.7} roughness={0.3} color="silver" />
+    </mesh>
   );
 };
 

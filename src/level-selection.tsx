@@ -69,7 +69,7 @@ const LevelSelection: React.FC = () => {
         backgroundImage: `url(${menuBg})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        padding: '2rem',
+        padding: { xs: '1rem', sm: '2rem' },
         color: 'white',
       }}
     >
@@ -89,7 +89,7 @@ const LevelSelection: React.FC = () => {
         sx={{
           background: 'linear-gradient(45deg, rgba(0, 0, 0, 0.6), transparent)',
           backdropFilter: 'blur(6px)',
-          padding: '4rem',
+          padding: { xs: '2rem', sm: '4rem' },
           boxShadow: '0 12px 24px rgba(0, 0, 0, 0.6)',
         }}
       >
@@ -99,8 +99,9 @@ const LevelSelection: React.FC = () => {
           sx={{
             color: '#ffeb3b',
             fontWeight: 'bold',
-            fontSize: '3rem',
+            fontSize: { xs: '2rem', sm: '3rem' },
             marginBottom: '2rem',
+            textAlign: 'center',
           }}
         >
           Choose Your Level
@@ -108,10 +109,12 @@ const LevelSelection: React.FC = () => {
         <Box
           display="flex"
           gap={3}
-          flexDirection="row"
-          alignItems="center"
+          flexWrap="wrap"
           justifyContent="center"
-          sx={{ overflowX: 'auto', padding: '1rem 0' }}
+          sx={{
+            overflowX: { xs: 'auto', md: 'visible' },
+            padding: '1rem 0',
+          }}
         >
           {levels.map((level) => (
             <Box
@@ -120,8 +123,8 @@ const LevelSelection: React.FC = () => {
               flexDirection="column"
               alignItems="center"
               justifyContent="space-between"
-              width={220}
-              height={350}
+              width={{ xs: '180px', sm: '200px', md: '220px' }}
+              height={{ xs: '300px', sm: '350px' }}
               p={2}
               borderRadius="20px"
               border={'2px solid #ffffff94'}
@@ -139,8 +142,8 @@ const LevelSelection: React.FC = () => {
             >
               <Box
                 position="relative"
-                width={220}
-                height={150}
+                width="100%"
+                height="150px"
                 display="flex"
                 alignItems="center"
                 justifyContent="center"
@@ -182,7 +185,7 @@ const LevelSelection: React.FC = () => {
                 sx={{
                   color: '#ffeb3b',
                   fontWeight: 'bold',
-                  fontSize: '1.5rem',
+                  fontSize: { xs: '1.2rem', sm: '1.5rem' },
                 }}
               >
                 {level.name}

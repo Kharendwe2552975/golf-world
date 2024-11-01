@@ -58,13 +58,6 @@ const initialLevels: Level[] = [
     Points: 4,
     image: 'https://via.placeholder.com/220x150',
   },
-  {
-    id: 5,
-    name: 'Level Five',
-    unlocked: false,
-    Points: 5,
-    image: 'https://via.placeholder.com/220x150',
-  },
 ];
 
 const GameContext = createContext<GameContextType | undefined>(undefined);

@@ -1,4 +1,4 @@
-import purpleBall from '@/assets/purpleBall.png';
+import purpleBall from '@/assets/purpleBall.jpg';
 import { RepeatWrapping, TextureLoader } from 'three';
 
 // Load the purple ball texture from the public folder

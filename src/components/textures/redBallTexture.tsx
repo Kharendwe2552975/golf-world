@@ -1,4 +1,4 @@
-import redBall from '@/assets/redBall.png';
+import redBall from '@/assets/redBall.jpg';
 import { RepeatWrapping, TextureLoader } from 'three';
 // Load the red ball texture from the public folder
 const textureLoader = new TextureLoader();

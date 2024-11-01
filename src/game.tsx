@@ -37,7 +37,7 @@ const Game = () => {
   const { hits, state } = useBall();
 
   const hasFailed = hits === par && par !== 0 && state !== 'rolling' && !levelCompleted;
-  const finishedGame = currentLevel === 2 && levelCompleted;
+  const finishedGame = currentLevel === 4 && levelCompleted;
   useEffect(() => {
     if (hasFailed) {
       setHasFailed(true);

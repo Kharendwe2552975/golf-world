@@ -1,4 +1,4 @@
-import orangeBall from '@/assets/orangeBall.png';
+import orangeBall from '@/assets/orangeBall.jpg';
 import { RepeatWrapping, TextureLoader } from 'three';
 
 // Load the orange ball texture from the public folder
