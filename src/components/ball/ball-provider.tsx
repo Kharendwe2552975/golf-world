@@ -1,8 +1,9 @@
-import React, { createContext, useCallback, useContext, useRef, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 
 // Define the context type, including hits, state, applyForce, setShootingAngle, lastStationaryPosition, getPosition, texture, and setTexture
 type BallContextType = {
   hits: number;
+  setHits: (hits: number) => void;
   lastStationaryPosition: [number, number, number];
   state: 'aiming' | 'shooting' | 'rolling';
   setState: (state: 'aiming' | 'shooting' | 'rolling') => void;
@@ -25,7 +26,16 @@ export const BallProvider = ({ children }: { children: React.ReactNode }) => {
   ]);
   const [shootingAngle, setShootingAngleState] = useState(0);
   const [state, setState] = useState<'aiming' | 'shooting' | 'rolling'>('aiming');
-  const [texture, setTexture] = useState('/whiteBall.png'); // Default texture
+  // const [texture, setTexture] = useState('/whiteBall.png'); // Default texture
+  const [texture, setTexture] = useState<string>(() => {
+    const savedTexture = localStorage.getItem('texture');
+    return savedTexture ? savedTexture : '/whiteBall.png';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('texture', texture);
+  }, [texture]);
+
   const apiRef = useRef<any>(null);
 
   const setShootingAngle = useCallback(
@@ -68,6 +78,7 @@ export const BallProvider = ({ children }: { children: React.ReactNode }) => {
     <BallContext.Provider
       value={{
         hits,
+        setHits,
         lastStationaryPosition,
         state,
         setState,

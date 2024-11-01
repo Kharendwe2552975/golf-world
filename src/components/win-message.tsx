@@ -16,9 +16,8 @@ const getClassification = (hits: number, par: number) => {
 };
 
 const WinMessage = () => {
-  const { hits } = useBall();
-  const { levelUp } = useGame();
-  const par = 3;
+  const { hits, setHits } = useBall();
+  const { levelUp, par } = useGame();
   const classification = getClassification(hits, par);
 
   // Determine message based on classification
@@ -74,7 +73,10 @@ const WinMessage = () => {
           borderRadius: '10px',
           cursor: 'pointer',
         }}
-        onClick={() => levelUp()}
+        onClick={() => {
+          levelUp();
+          setHits(0);
+        }}
       >
         Next Hole
       </Button>

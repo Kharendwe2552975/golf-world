@@ -7,11 +7,13 @@ import { useGame } from '@/game-context';
 const LevelOne = () => {
   const holePosition: [number, number, number] = [0, 0, -80];
   const holeCoords = { x: 5, z: 2 };
-  const { levelCompleted } = useGame();
+  const { setPar, hasFailed } = useGame();
+
+  setPar(2);
   return (
     <group>
       <GrassGround holeCoords={holeCoords} rails={[true, true, true, true]} />
-      <Ball holePosition={holePosition} />
+      {!hasFailed && <Ball holePosition={holePosition} />}
       <FlagWithPole position={holePosition} />
       {/* <MultiplayerBalls /> */}
       <MiniCamera position={[0, 600, 0]} />

@@ -8,7 +8,9 @@ import { useGame } from '@/game-context';
 const LevelTwo = () => {
   const holePosition: [number, number, number] = [200, 0, -230];
   const holeCoords = { x: 5, z: 2 }; // Updated hole coordinates for level two
-  const { levelCompleted } = useGame();
+  const { setPar, hasFailed } = useGame();
+
+  setPar(4);
 
   return (
     <group>
@@ -35,7 +37,7 @@ const LevelTwo = () => {
       <Rail position={[45, 0, -100]} rotation={[0, Math.PI / 2, 0]} size={[10, 10, 200]} />
       <Rail position={[155, 0, 0]} rotation={[0, Math.PI / 2, 0]} size={[10, 10, 200]} />
       <FlagWithPole position={holePosition} />
-      <Ball holePosition={holePosition} initialPosition={[0, 10, 180]} />
+      {!hasFailed && <Ball holePosition={holePosition} initialPosition={[0, 10, 180]} />}
       <MiniCamera position={[0, 600, 0]} />
     </group>
   );

@@ -12,15 +12,30 @@ type GameContextType = {
   levelUp: () => void;
   levelCompleted: boolean;
   setLevelCompleted: (completed: boolean) => void;
+  par: number;
+  setPar: (par: number) => void;
+  hasFailed: boolean;
+  setHasFailed: (failed: boolean) => void;
 };
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
 
 export const GameProvider = ({ children }: { children: React.ReactNode }) => {
-  const [currentLevel, setCurrentLevel] = useState(1);
+  const [currentLevel, setCurrentLevel] = useState<number>(() => {
+    const savedLevel = localStorage.getItem('currentLevel');
+    return savedLevel ? parseInt(savedLevel, 10) : 1;
+  });
   const [levelCompleted, setLevelCompleted] = useState(false);
-  const [isMusicOn, setIsMusicOn] = useState(true);
-  const [isSoundOn, setIsSoundOn] = useState(true);
+  const [isMusicOn, setIsMusicOn] = useState<boolean>(() => {
+    const savedMusicState = localStorage.getItem('isMusicOn');
+    return savedMusicState ? JSON.parse(savedMusicState) : true;
+  });
+  const [isSoundOn, setIsSoundOn] = useState<boolean>(() => {
+    const savedSoundState = localStorage.getItem('isSoundOn');
+    return savedSoundState ? JSON.parse(savedSoundState) : true;
+  });
+  const [par, setPar] = useState(0);
+  const [hasFailed, setHasFailed] = useState(false);
 
   const winAudio = new Audio(winSound);
   const startAudio = new Audio(startSound);
@@ -50,6 +65,20 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       }
     }
   }, [levelCompleted]);
+
+  // Store current level in local storage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('currentLevel', currentLevel.toString());
+  }, [currentLevel]);
+
+  useEffect(() => {
+    localStorage.setItem('isMusicOn', JSON.stringify(isMusicOn));
+  }, [isMusicOn]);
+
+  useEffect(() => {
+    localStorage.setItem('isSoundOn', JSON.stringify(isSoundOn));
+  }, [isSoundOn]);
+
   return (
     <GameContext.Provider
       value={{
@@ -62,6 +91,10 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
         toggleMusic: () => setIsMusicOn((prev) => !prev),
         isSoundOn,
         toggleSound: () => setIsSoundOn((prev) => !prev),
+        par,
+        setPar,
+        hasFailed,
+        setHasFailed,
       }}
     >
       {children}

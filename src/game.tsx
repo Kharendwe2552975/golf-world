@@ -1,8 +1,10 @@
 import { Physics } from '@react-three/cannon';
 import { OrbitControls } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
-import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useBall } from './components/ball/ball-provider';
 import EnergySelector from './components/ball/energy-selector';
+import FailMessage from './components/fail-message';
 import Leaderboard from './components/multiplayer/leaderboard';
 import WinMessage from './components/win-message';
 import { useGame } from './game-context';
@@ -27,11 +29,16 @@ const GetLevel = () => {
 
 const Game = () => {
   const { levelCompleted } = useGame();
-  const navigate = useNavigate();
+  const { par, setHasFailed } = useGame();
+  const { hits, state } = useBall();
 
-  const handleQuitGame = () => {
-    navigate('/');
-  };
+  const hasFailed = hits === par && par !== 0 && state !== 'rolling';
+
+  useEffect(() => {
+    if (hasFailed) {
+      setHasFailed(true);
+    }
+  }, [hasFailed, setHasFailed]);
 
   return (
     <>
@@ -53,22 +60,7 @@ const Game = () => {
       <EnergySelector />
       {levelCompleted && <Leaderboard />}
       {levelCompleted && <WinMessage />}
-      <button
-        onClick={handleQuitGame}
-        style={{
-          position: 'absolute',
-          bottom: 20,
-          left: 20,
-          padding: '10px 20px',
-          fontSize: '16px',
-          borderRadius: '20px',
-          border: '2px solid #ffffff94',
-          background: 'linear-gradient(45deg, #f2f2f2ba, transparent)',
-          backdropFilter: 'blur(6px)',
-        }}
-      >
-        Quit
-      </button>
+      {hasFailed && <FailMessage />}
     </>
   );
 };
