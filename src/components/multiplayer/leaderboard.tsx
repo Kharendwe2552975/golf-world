@@ -11,21 +11,40 @@ const Leaderboard: React.FC = () => {
         position: 'absolute',
         bottom: '20px',
         right: '20px',
-        bgcolor: 'rgba(255, 255, 255, 0.8)',
+        bgcolor: 'rgba(0, 0, 0, 0.75)', // Darker background for better contrast
+        color: '#fff', // White text for contrast
         borderRadius: '8px',
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
         padding: '16px',
         zIndex: 10,
         width: '250px',
       }}
     >
-      <Typography variant="h5" gutterBottom align="center">
+      <Typography
+        variant="h5"
+        gutterBottom
+        align="center"
+        sx={{ fontWeight: 'bold', color: '#ffdd57' }}
+      >
         Leaderboard
       </Typography>
       {Object.entries(players).map(([name, playerData]) => (
-        <Typography key={name} variant="body1">
-          {name}: {playerData.hits} hits
-        </Typography>
+        <Box
+          key={name}
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            padding: '4px 0',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
+          }}
+        >
+          <Typography variant="body1" sx={{ fontWeight: 500 }}>
+            {name}
+          </Typography>
+          <Typography variant="body1" sx={{ fontWeight: 500 }}>
+            {playerData.hits + 1} hits
+          </Typography>
+        </Box>
       ))}
     </Box>
   );

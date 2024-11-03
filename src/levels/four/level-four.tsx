@@ -1,10 +1,7 @@
-import waternormals from '@/assets/Normals/waternormals.jpg';
 import Ball from '@/components/ball/ball';
 import FlagWithPole from '@/components/goal-point-flag';
 import GrassGround from '@/components/grass';
 import MiniCamera from '@/components/mini-camera';
-import { Ocean } from '@/components/ocean';
-import { FrontSide, Vector3 } from 'three';
 import LevelFourIncline from './incline-plane';
 import LevelFourRockyStage from './rocky-stage';
 import LevelFourStartStage from './start-stage';
@@ -35,26 +32,6 @@ const LevelFour = () => {
 
       {/* Flag with Pole */}
       <FlagWithPole position={holePosition} />
-
-      {/* Ocean */}
-      <Ocean
-        dimensions={[800, 800]}
-        normals={waternormals}
-        distortionScale={20}
-        size={10}
-        options={{
-          // defaults
-          clipBias: 0,
-          alpha: 0.8,
-          sunDirection: new Vector3(0.70707, 0.70707, 0),
-          sunColor: 0xffffff,
-          waterColor: 0x001e0f,
-          eye: new Vector3(0, 0, 0),
-          distortionScale: 3.7, // automatically set from "distortionScale" prop
-          side: FrontSide,
-          fog: true,
-        }}
-      />
 
       <Ball holePosition={holePosition} initialPosition={[-150, 70, 50]} />
       <MiniCamera position={[0, 600, 0]} />

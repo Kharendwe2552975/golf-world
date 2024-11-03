@@ -1,15 +1,12 @@
-import waternormals from '@/assets/Normals/waternormals.jpg';
 import Ball from '@/components/ball/ball';
 import FlagWithPole from '@/components/goal-point-flag';
 import GrassGround from '@/components/grass';
 import MiniCamera from '@/components/mini-camera';
-import { Ocean } from '@/components/ocean';
 import Plane from '@/levels/three/plane';
-import { FrontSide, Vector3 } from 'three';
-import RotatingCylinder from './rotating-cylinder';
+import RotatingPlank from './rotating-plank';
 
 const LevelThree = () => {
-  const holePosition: [number, number, number] = [0, 25, -355];
+  const holePosition: [number, number, number] = [0, 20, -355];
   const holeCoords = { x: 5, z: 2 };
 
   return (
@@ -31,27 +28,7 @@ const LevelThree = () => {
       <FlagWithPole position={holePosition} />
 
       {/* Rotating Cylinders */}
-      <RotatingCylinder position={[0, 0, -60]} speed={0.05} />
-
-      {/* Ocean */}
-      <Ocean
-        dimensions={[800, 800]}
-        normals={waternormals}
-        distortionScale={20}
-        size={10}
-        options={{
-          // defaults
-          clipBias: 0,
-          alpha: 0.8,
-          sunDirection: new Vector3(0.70707, 0.70707, 0),
-          sunColor: 0xffffff,
-          waterColor: 0x001e0f,
-          eye: new Vector3(0, 0, 0),
-          distortionScale: 3.7, // automatically set from "distortionScale" prop
-          side: FrontSide,
-          fog: true,
-        }}
-      />
+      <RotatingPlank size={[80, 10, 10]} position={[0, 0, -50]} rotationSpeed={0.01} />
 
       <Ball holePosition={holePosition} />
       <MiniCamera position={[-100, 800, 400]} />

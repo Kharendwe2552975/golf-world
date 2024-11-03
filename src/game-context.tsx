@@ -3,6 +3,8 @@ import startSound from './assets/start.mp3';
 import winSound from './assets/win.mp3';
 
 type GameContextType = {
+  hasScenery: boolean;
+  setHasScenery: (hasScenery: boolean) => void;
   isMusicOn: boolean;
   toggleMusic: () => void;
   isSoundOn: boolean;
@@ -85,6 +87,11 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   const winAudio = new Audio(winSound);
   const startAudio = new Audio(startSound);
 
+  const [hasScenery, setHasScenery] = useState(() => {
+    const savedScenery = localStorage.getItem('hasScenery');
+    return savedScenery ? JSON.parse(savedScenery) : true;
+  });
+
   const levelUp = () => {
     setCurrentLevel((prev) => prev + 1);
     setPar(levels[currentLevel].par);
@@ -143,6 +150,10 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   }, [isSoundOn]);
 
   useEffect(() => {
+    localStorage.setItem('hasScenery', JSON.stringify(hasScenery));
+  }, [hasScenery]);
+
+  useEffect(() => {
     const savedLevels = localStorage.getItem('levels');
     if (!savedLevels) {
       localStorage.setItem('levels', JSON.stringify(initialLevels));
@@ -152,6 +163,8 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <GameContext.Provider
       value={{
+        hasScenery,
+        setHasScenery,
         currentLevel,
         setCurrentLevel,
         levelCompleted,
