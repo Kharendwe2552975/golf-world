@@ -14,7 +14,6 @@ import { ballTexture } from '../textures/ballTexture';
 import { greenBallTexture } from '../textures/greenBallTexture';
 import { orangeBallTexture } from '../textures/orangeBallTexture';
 import { purpleBallTexture } from '../textures/purpleBallTexture';
-
 import { redBallTexture } from '../textures/redBallTexture';
 
 const CustomMaterial = shaderMaterial(
@@ -38,6 +37,7 @@ const Ball = ({
   initialPosition?: [number, number, number];
 }) => {
   const [position, setPosition] = useState<[number, number, number]>(initialPosition);
+  const [isCameraActive, setIsCameraActive] = useState(true);
   const [ref, api] = useSphere(() => ({
     mass: 0.045,
     position: initialPosition,
@@ -64,7 +64,6 @@ const Ball = ({
 
     const unsubscribePosition = api.position.subscribe((pos) => {
       const tolerance = 0.1;
-
       const newPos: [number, number, number] = [pos[0], pos[1], pos[2]];
       if (
         Math.abs(newPos[0] - position[0]) > tolerance ||
@@ -120,6 +119,19 @@ const Ball = ({
     }
   };
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'c' || event.key === 'C') {
+        setIsCameraActive((prev) => !prev);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
   return (
     <>
       {/* @ts-ignore */}
@@ -129,8 +141,10 @@ const Ball = ({
         <customMaterial attach="material" uTexture={getTexture(texture)} />
       </mesh>
 
-      {state !== 'rolling' && !levelCompleted && <AimingArrow position={position} />}
-      {!levelCompleted && <CameraController ballPosition={position} />}
+      {isCameraActive && state !== 'rolling' && !levelCompleted && (
+        <AimingArrow position={position} />
+      )}
+      {isCameraActive && !levelCompleted && <CameraController ballPosition={position} />}
     </>
   );
 };
