@@ -1,3 +1,7 @@
+import level1 from '@/assets/levels/level1.jpeg';
+import level2 from '@/assets/levels/level2.jpeg';
+import level3 from '@/assets/levels/level3.jpeg';
+import level4 from '@/assets/levels/level4.jpeg';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import startSound from './assets/start.mp3';
 import winSound from './assets/win.mp3';
@@ -36,28 +40,28 @@ const initialLevels: Level[] = [
     name: 'Level One',
     unlocked: true,
     par: 2,
-    image: 'https://via.placeholder.com/220x150',
+    image: level1,
   },
   {
     id: 2,
     name: 'Level Two',
     unlocked: false,
     par: 4,
-    image: 'https://via.placeholder.com/220x150',
+    image: level2,
   },
   {
     id: 3,
     name: 'Level Three',
     unlocked: false,
     par: 4,
-    image: 'https://via.placeholder.com/220x150',
+    image: level3,
   },
   {
     id: 4,
     name: 'Level Four',
     unlocked: false,
     par: 8,
-    image: 'https://via.placeholder.com/220x150',
+    image: level4,
   },
 ];
 
