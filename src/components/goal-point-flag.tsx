@@ -1,7 +1,7 @@
 import { useFrame } from '@react-three/fiber';
 import { useRef } from 'react';
 import { BufferGeometry, Float32BufferAttribute } from 'three';
-import { golfFabricTexture } from './textures/flag'; // Import the golf fabric texture
+import { golfFabricMaterial } from './textures/flag';
 
 function Flag({ position }: { position: [number, number, number] }) {
   const flagRef = useRef(null);
@@ -25,7 +25,7 @@ function Flag({ position }: { position: [number, number, number] }) {
   return (
     <mesh ref={flagRef} position={position}>
       <primitive object={geometry} attach="geometry" />
-      <meshStandardMaterial map={golfFabricTexture} side={2} />
+      <primitive object={golfFabricMaterial} attach="material" />
     </mesh>
   );
 }

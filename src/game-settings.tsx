@@ -8,7 +8,7 @@ import { useGame } from './game-context';
 const GameSettings: React.FC = () => {
   const navigate = useNavigate();
   const [openTexture, setOpenTexture] = useState(false);
-  const { isMusicOn, isSoundOn, toggleMusic, toggleSound } = useGame();
+  const { isMusicOn, isSoundOn, toggleMusic, toggleSound, hasScenery, setHasScenery } = useGame();
   return (
     <>
       <Box
@@ -44,6 +44,14 @@ const GameSettings: React.FC = () => {
             <FormControlLabel
               control={<Switch checked={isSoundOn} onChange={() => toggleSound()} />}
               label="Sound"
+            />
+
+            <FormControlLabel
+              control={
+                //@ts-ignore
+                <Switch checked={hasScenery} onChange={() => setHasScenery((prev) => !prev)} />
+              }
+              label="Scenery"
             />
           </FormGroup>
           <Button

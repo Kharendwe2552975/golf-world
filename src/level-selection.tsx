@@ -3,52 +3,13 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import { Box, Button, IconButton, Typography } from '@mui/material';
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGame } from './game-context';
 
-const initialLevels = [
-  {
-    id: 1,
-    name: 'Level One',
-    unlocked: true,
-    Points: 3,
-    image: 'https://via.placeholder.com/220x150',
-  },
-  {
-    id: 2,
-    name: 'Level Two',
-    unlocked: true,
-    Points: 4,
-    image: 'https://via.placeholder.com/220x150',
-  },
-  {
-    id: 3,
-    name: 'Level Three',
-    unlocked: true,
-    Points: 5,
-    image: 'https://via.placeholder.com/220x150',
-  },
-  {
-    id: 4,
-    name: 'Level Four',
-    unlocked: false,
-    Points: 4,
-    image: 'https://via.placeholder.com/220x150',
-  },
-  {
-    id: 5,
-    name: 'Level Five',
-    unlocked: false,
-    Points: 5,
-    image: 'https://via.placeholder.com/220x150',
-  },
-];
-
 const LevelSelection: React.FC = () => {
   const navigate = useNavigate();
-  const [levels] = useState(initialLevels);
-  const { setCurrentLevel } = useGame();
+  const { setCurrentLevel, levels } = useGame();
 
   const handleLevelClick = (levelId: number, unlocked: boolean) => {
     if (unlocked) {
@@ -70,12 +31,12 @@ const LevelSelection: React.FC = () => {
         backgroundImage: `url(${menuBg})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        padding: '2rem',
+        padding: { xs: '1rem', sm: '2rem' },
         color: 'white',
       }}
     >
       <Box position="absolute" top={16} left={16}>
-        <IconButton onClick={() => navigate(-1)} color="inherit">
+        <IconButton onClick={() => navigate('/')} color="inherit">
           <ArrowBackIcon fontSize="large" />
         </IconButton>
       </Box>
@@ -90,7 +51,7 @@ const LevelSelection: React.FC = () => {
         sx={{
           background: 'linear-gradient(45deg, rgba(0, 0, 0, 0.6), transparent)',
           backdropFilter: 'blur(6px)',
-          padding: '4rem',
+          padding: { xs: '2rem', sm: '4rem' },
           boxShadow: '0 12px 24px rgba(0, 0, 0, 0.6)',
         }}
       >
@@ -100,8 +61,9 @@ const LevelSelection: React.FC = () => {
           sx={{
             color: '#ffeb3b',
             fontWeight: 'bold',
-            fontSize: '3rem',
+            fontSize: { xs: '2rem', sm: '3rem' },
             marginBottom: '2rem',
+            textAlign: 'center',
           }}
         >
           Choose Your Level
@@ -109,10 +71,12 @@ const LevelSelection: React.FC = () => {
         <Box
           display="flex"
           gap={3}
-          flexDirection="row"
-          alignItems="center"
+          flexWrap="wrap"
           justifyContent="center"
-          sx={{ overflowX: 'auto', padding: '1rem 0' }}
+          sx={{
+            overflowX: { xs: 'auto', md: 'visible' },
+            padding: '1rem 0',
+          }}
         >
           {levels.map((level) => (
             <Box
@@ -121,8 +85,8 @@ const LevelSelection: React.FC = () => {
               flexDirection="column"
               alignItems="center"
               justifyContent="space-between"
-              width={220}
-              height={350}
+              width={{ xs: '180px', sm: '200px', md: '220px' }}
+              height={{ xs: '300px', sm: '350px' }}
               p={2}
               borderRadius="20px"
               border={'2px solid #ffffff94'}
@@ -140,8 +104,8 @@ const LevelSelection: React.FC = () => {
             >
               <Box
                 position="relative"
-                width={220}
-                height={150}
+                width="100%"
+                height="150px"
                 display="flex"
                 alignItems="center"
                 justifyContent="center"
@@ -183,7 +147,7 @@ const LevelSelection: React.FC = () => {
                 sx={{
                   color: '#ffeb3b',
                   fontWeight: 'bold',
-                  fontSize: '1.5rem',
+                  fontSize: { xs: '1.2rem', sm: '1.5rem' },
                 }}
               >
                 {level.name}
@@ -195,7 +159,7 @@ const LevelSelection: React.FC = () => {
                   fontSize: '1.1rem',
                 }}
               >
-                Points: {level.Points}
+                Par: {level.par}
               </Typography>
               <Button
                 variant="contained"

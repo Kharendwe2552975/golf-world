@@ -70,7 +70,7 @@ export const Ocean = forwardRef<Water, OceanProps>(
     });
 
     return (
-      <group {...props}>
+      <group {...props} position={[0, -2, 0]}>
         <primitive object={water} rotation-x={-Math.PI / 2} />
       </group>
     );

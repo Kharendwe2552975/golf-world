@@ -3,12 +3,10 @@ import FlagWithPole from '@/components/goal-point-flag';
 import GrassGround from '@/components/grass';
 import Rail from '@/components/grass/rail';
 import MiniCamera from '@/components/mini-camera';
-import { useGame } from '@/game-context';
 
 const LevelTwo = () => {
   const holePosition: [number, number, number] = [200, 0, -230];
   const holeCoords = { x: 5, z: 2 }; // Updated hole coordinates for level two
-  const { levelCompleted } = useGame();
 
   return (
     <group>

@@ -14,8 +14,8 @@ const MiniCamera = ({ position }: MiniCameraProps) => {
   useEffect(() => {
     miniRendererRef.current.setSize(200, 200);
     miniRendererRef.current.domElement.style.position = 'absolute';
-    miniRendererRef.current.domElement.style.top = '10px';
-    miniRendererRef.current.domElement.style.right = '1150px';
+    miniRendererRef.current.domElement.style.top = '65px';
+    miniRendererRef.current.domElement.style.right = '1145px';
     document.body.appendChild(miniRendererRef.current.domElement);
 
     // Cleanup function to remove mini renderer on unmount

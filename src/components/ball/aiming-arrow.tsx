@@ -5,7 +5,7 @@ import { useBall } from './ball-provider';
 
 const AimingArrow = ({ position }: { position: [number, number, number] }) => {
   const [rotationAngle, setRotationAngle] = useState(0);
-  const { state, setShootingAngle } = useBall();
+  const { state, setShootingAngle, setState } = useBall();
   const { camera } = useThree();
 
   useEffect(() => {
@@ -31,17 +31,20 @@ const AimingArrow = ({ position }: { position: [number, number, number] }) => {
       setRotationAngle(angle);
     };
 
-    const handleMouseClick = () => {
-      if (state !== 'aiming') return;
-      setShootingAngle(rotationAngle);
+    const handleMouseClick = (event: MouseEvent) => {
+      if (event.button === 0) {
+        if (state !== 'aiming') return;
+        setShootingAngle(rotationAngle);
+      } else if (event.button === 2) {
+        if (state !== 'shooting') return;
+        setState('aiming');
+      }
     };
-
-    window.addEventListener('click', handleMouseClick);
+    window.addEventListener('mousedown', handleMouseClick);
     window.addEventListener('mousemove', handleMouseMove);
-
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('click', handleMouseClick);
+      window.removeEventListener('mousedown', handleMouseClick);
     };
   }, [state, camera, position, rotationAngle]);
 
